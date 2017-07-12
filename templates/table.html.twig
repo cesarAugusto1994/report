@@ -1,0 +1,40 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+        <div class="panel panel-danger">
+
+            <div class="panel-heading">Tabelas</div>
+
+            <div class="panel-body">
+
+                    <table class="table table-bordered table-responsive table-hovered">
+                        <thead>
+                        <tr>
+                            <th>Coluna</th>
+                            <th>Tipo</th>
+                            <th>É Chave Primaria</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for table in tables %}
+                            <tr>
+                                <td><a href="/tabela/{{ table.nome }}">{{ table.nome }}</a></td>
+                                <td>{{ table.tipo|upper }}</td>
+                                <td>{% if table.chavePrimaria %}Sim{% else %}Não{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+

@@ -17,4 +17,9 @@ $app['twig'] = $app->extend('twig', function ($twig, $app) {
     return $twig;
 });
 
+require __DIR__ . '/../app/providers.php';
+require __DIR__ . '/../app/services.php';
+require __DIR__ . '/../app/middlewares.php';
+require __DIR__ . '/../app/routes.php';
+
 return $app;

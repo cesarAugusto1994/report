@@ -1,5 +1,42 @@
 {% extends "layout.html.twig" %}
-
 {% block content %}
-    Welcome to your new Silex Application!
+
+    <div class="container">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Tabelas</div>
+
+            <div class="panel-body">
+
+                <table class="table table-bordered table-responsive table-hover"
+                       data-toggle="table" data-striped="true" data-search="true"
+                       data-show-toggle="true" data-show-columns="true" data-pagination="true">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ativo</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for table in tables %}
+                        <tr>
+                            <td><a href="/tabela/{{ table.nome }}">{{ table.nome }}</a></td>
+                            <td><input type="checkbox" {% if table.ativo %}checked{% endif %} class="form-control"/></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2">Nenhuma Tabela Configurada</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
 {% endblock %}

@@ -1,0 +1,53 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+        <div class="panel panel-danger">
+
+            <div class="panel-heading">Tabelas</div>
+
+            <div class="panel-body">
+
+                {% if log|length > 0 %}
+                    <div class="alert alert-danger">
+                        <p class="lead">{{ log }}</p>
+                        <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
+                    </div>
+                {% endif %}
+
+
+                <table class="table table-bordered table-responsive table-hover"
+                       data-toggle="table" data-striped="true" data-search="true"
+                       data-show-toggle="true" data-show-columns="true" data-pagination="true">
+
+                    {% if columns|length > 0 %}
+                        <thead>
+                        <tr>
+                            {% for column in columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                    {% endif %}
+
+                    <tbody>
+                    {% for itens in result %}
+                        <tr>
+                            {% for item in itens %}
+                                <td>{{ item }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+

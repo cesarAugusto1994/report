@@ -1,0 +1,44 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+        <div class="panel panel-danger">
+
+            <div class="panel-heading">Tabelas</div>
+
+            <div class="panel-body">
+
+                <a href="/query/add" class="btn btn-success small">Adicionar Busca</a>
+                <hr class="small"/>
+
+                <table class="table table-bordered table-responsive table-hovered">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Query</th>
+                        <th>RUN</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for query in queries %}
+                        <tr>
+                            <td><a href="/query/edit/{{ query.id }}">{{ query.nome }}</a></td>
+                            <td>{{ query.query }}</td>
+                            <td>
+                                <a class="btn btn-danger execute" href="/execute/{{ query.id }}">Executar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
