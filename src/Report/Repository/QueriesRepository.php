@@ -23,4 +23,13 @@ class QueriesRepository extends EntityRepository
         $this->_em->flush();
     }
 
+    /**
+     * @param Queries $queries
+     */
+    public function remove(Queries $queries)
+    {
+        $this->_em->remove($queries);
+        $this->_em->flush();
+    }
+
 }

@@ -3,7 +3,7 @@
 
     <div class="container">
 
-        <div class="panel panel-danger">
+        <div class="panel panel-default">
 
             <div class="panel-heading">Tabelas</div>
 
@@ -16,38 +16,167 @@
                     </div>
                 {% endif %}
 
+                {% if parametros|length > 0 %}
 
-                <table class="table table-bordered table-responsive table-hover"
-                       data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true">
+                <div class="panel panel-info">
 
-                    {% if columns|length > 0 %}
-                        <thead>
-                        <tr>
-                            {% for column in columns %}
-                                <th>{{ column }}</th>
+                    <div class="panel-heading">Formulário</div>
+
+                    <div class="panel-body">
+
+                        <div class="alert alert-info">
+                            <p>Esta Query possui Parametros</p>
+                        </div>
+
+                        <form class="form-horizontal">
+
+                            {% for parametro in parametros %}
+
+                                <input type="hidden"  id="{{ parametro }}-i">
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2">{{ parametro }}:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control parametro" data-param="{{ parametro }}"
+                                               name="{{ parametro }}" id="{{ parametro }}"/>
+                                    </div>
+                                </div>
+
                             {% endfor %}
-                        </tr>
-                        </thead>
-                    {% endif %}
 
-                    <tbody>
-                    {% for itens in result %}
-                        <tr>
-                            {% for item in itens %}
-                                <td>{{ item }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Query:</label>
+                                <div class="col-sm-10">
+                                        <pre><textarea class="form-control" id="query-view"
+                                                       rows="12">{{ query.query }}</textarea></pre>
+                                </div>
+                            </div>
 
-                </table>
+                            <button class="btn btn-info">Executar</button>
 
+
+                        </form>
+
+                    </div>
+                </div>
             </div>
+
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    Exportar
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" class="export" data-type="excel">EXCEL</a></li>
+                    <li><a href="#" class="export" data-type="pdf">PDF</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" class="export" data-type="json">JSON</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" class="export" datatype="csv">CSV</a></li>
+                </ul>
+            </div>
+
+
+            <table class="table table-bordered table-responsive table-hover"
+                   data-toggle="table" data-striped="true" data-search="true"
+                   data-show-toggle="true" data-show-columns="true" data-pagination="true" id="tableExport">
+
+                {% if columns|length > 0 %}
+                    <thead>
+                    <tr>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                {% endif %}
+
+                <tbody>
+                {% for itens in result %}
+                    <tr>
+                        {% for item in itens %}
+                            <td>{{ item }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
 
         </div>
 
     </div>
+
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script>
+
+        $(document).ready(function () {
+
+            $(".parametro").blur(function () {
+
+                var paramns = [];
+
+                var valor = $(this).val();
+
+                if (!valor) {
+                    return;
+                }
+
+                var nomeParam = $(this).data('param');
+                var item = $("#"+nomeParam+"-i");
+
+                if (!item.val()) {
+                    item.val(valor);
+                }
+
+                var i = item.val();
+
+                var target = ':' + nomeParam + ':';
+
+                var view = $("#query-view");
+                var v = view.val().replace(target, valor);
+
+                if (valor !== i) {
+                    v = view.val().replace(i, valor);
+                }
+
+                paramns.push(target + '=' + valor);
+                $("#parametros").val(paramns.toString());
+                view.val(v);
+            });
+
+
+            $(".export").click(function () {
+
+                var separator;
+                var type = $(this).data('type');
+
+                if ('csv' === type) {
+                    separator = ",";
+                }
+
+                $('#tableExport').tableExport({
+                    separator: separator,
+                    tableName: '{{ query.nome }}',
+                    type: $(this).data('type'),
+                    escape: 'false',
+                    pdfFontSize: 11,
+                    pdfLeftMargin: 20,
+                    consoleLog: 'true'
+                });
+            })
+
+        });
+
+    </script>
 
 {% endblock %}
 

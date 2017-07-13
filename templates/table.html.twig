@@ -3,32 +3,88 @@
 
     <div class="container">
 
-        <div class="panel panel-danger">
+        <div class="panel panel-default">
 
-            <div class="panel-heading">Tabelas</div>
+            <div class="panel-heading">Criar Query</div>
 
             <div class="panel-body">
 
-                    <table class="table table-bordered table-responsive table-hovered">
-                        <thead>
+                <form action="/query/create" method="post">
+
+                    <input type="hidden" name="table" value="{{ table.id }}"/>
+
+                    <label>Selecionar:
+                        <select class="selectpicker" multiple data-actions-box="true"
+                                data-selected-text-format="count" show-tick="true" data-live-search="true" name="select[]">
+                            {% for column in columns %}
+                                <option selected="selected" value="{{ column.id }}">{{ column.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Onde:
+                        <select class="selectpicker" multiple data-actions-box="true" title="Nada Selecionado" data-live-search="true" name="where[]">
+                            {% for column in columns %}
+                                <option value="{{ column.id }}">{{ column.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Agrupado Por:
+                        <select class="selectpicker" multiple data-actions-box="true" title="Nada Selecionado" data-live-search="true" name="groupBy[]">
+                            {% for column in columns %}
+                                <option value="{{ column.id }}">{{ column.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Ordenado Por:
+                        <select class="selectpicker" multiple data-actions-box="true" title="Nada Selecionado" data-live-search="true" name="orderBy[]">
+                            {% for column in columns %}
+                                <option value="{{ column.id }}">{{ column.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Limit:
+                        <select class="selectpicker" data-actions-box="true" name="limit">
+                                <option value="">Tudo</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-primary">Criar Query</button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">Colunas</div>
+
+            <div class="panel-body">
+
+                <table class="table table-bordered table-responsive table-hovered">
+                    <thead>
+                    <tr>
+                        <th>Coluna</th>
+                        <th>Tipo</th>
+                        <th>É Chave Primaria</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for column in columns %}
                         <tr>
-                            <th>Coluna</th>
-                            <th>Tipo</th>
-                            <th>É Chave Primaria</th>
+                            <td><a>{{ column.nome }}</a></td>
+                            <td>{{ column.tipo|upper }}</td>
+                            <td>{% if column.chavePrimaria %}Sim{% else %}Não{% endif %}</td>
                         </tr>
-                        </thead>
+                    {% endfor %}
+                    </tbody>
 
-                        <tbody>
-                        {% for table in tables %}
-                            <tr>
-                                <td><a href="/tabela/{{ table.nome }}">{{ table.nome }}</a></td>
-                                <td>{{ table.tipo|upper }}</td>
-                                <td>{% if table.chavePrimaria %}Sim{% else %}Não{% endif %}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-
-                    </table>
+                </table>
 
             </div>
 

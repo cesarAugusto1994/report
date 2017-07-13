@@ -1,0 +1,27 @@
+
+    <table class="table table-bordered table-responsive table-hover"
+           data-toggle="table" data-striped="true" data-search="true"
+           data-show-toggle="true" data-show-columns="true" data-pagination="true">
+
+        {% if columns|length > 0 %}
+            <thead>
+            <tr>
+                {% for column in columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+        {% endif %}
+
+        <tbody>
+        {% for itens in result %}
+            <tr>
+                {% for item in itens %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
