@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Colunas
  *
  * @ORM\Table(name="colunas", indexes={@ORM\Index(name="colunas_tabelas_id_fk", columns={"tabela_id"})}, schema="relatorio")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Report\Repository\ColunasRepository")
  */
 class Colunas
 {
@@ -53,6 +53,22 @@ class Colunas
     private $tabela;
 
     /**
+     * @var \Tabelas
+     *
+     * @ORM\ManyToOne(targetEntity="Tabelas")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tabela_ref", referencedColumnName="id")
+     * })
+     */
+    private $tabelaRef;
+
+    /**
+     * @ORM\Column(name="label", type="boolean")
+     * @var boolean
+     */
+    private $label;
+
+    /**
      * @return int
      */
     public function getId()
@@ -90,6 +106,30 @@ class Colunas
     public function getTabela()
     {
         return $this->tabela;
+    }
+
+    /**
+     * @return \Tabelas
+     */
+    public function getTabelaRef()
+    {
+        return $this->tabelaRef;
+    }
+
+    /**
+     * @param \Tabelas $tabelaRef
+     */
+    public function setTabelaRef($tabelaRef)
+    {
+        $this->tabelaRef = $tabelaRef;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     /**

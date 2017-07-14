@@ -7,6 +7,7 @@
  */
 
 use Doctrine\ORM\EntityManager;
+use Report\Entity\Colunas;
 use Report\Entity\Queries;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,84 @@ $app->get('/', function () use ($app) {
 
 });
 
+$app->get('/api/tabelas', function () use ($app) {
+
+    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($tables as $table) {
+        $retorno[$table->getId()] = $table->getNome();
+    }
+
+    return new JsonResponse($retorno);
+});
+
+
+$app->post('/api/remover-vinculo-coluna-tabela', function (Request $request) use ($app) {
+
+    $coluna = $request->request->get('coluna');
+
+    try {
+        /**
+         * @var Colunas $column
+         */
+        $column = $app['columns.repository']->find($coluna);
+
+        $column->setTabelaRef(null);
+
+        $app['columns.repository']->save($column);
+
+        return $app->json([
+            'classe' => 'sucesso',
+            'mensagem' => 'Tabela Desvinculada com Sucesso.'
+        ], JsonResponse::HTTP_CREATED);
+
+    } catch (Exception $e) {
+
+        return $app->json([
+            'classe' => 'erro',
+            'mensagem' => $e->getMessage()
+        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+
+    }
+});
+
+
+$app->post('/api/vincular-coluna-tabela', function (Request $request) use ($app) {
+
+    $tabela = $request->request->get('tabela');
+    $coluna = $request->request->get('coluna');
+
+    try {
+
+        $table = $app['tables.repository']->find($tabela);
+
+        /**
+         * @var Colunas $column
+         */
+        $column = $app['columns.repository']->find($coluna);
+
+        $column->setTabelaRef($table);
+
+        $app['columns.repository']->save($column);
+
+        return $app->json([
+            'classe' => 'sucesso',
+            'mensagem' => 'Tabela Vinculada com Sucesso.'
+        ], JsonResponse::HTTP_CREATED);
+
+    } catch (Exception $e) {
+
+        return $app->json([
+            'classe' => 'erro',
+            'mensagem' => $e->getMessage()
+        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+
+    }
+
+});
+
 $app->get('/tabela/{nome}', function ($nome) use ($app) {
 
     /**
@@ -27,7 +106,9 @@ $app->get('/tabela/{nome}', function ($nome) use ($app) {
     $table = $app['tables.repository']->findOneBy(['nome' => $nome]);
     $columns = $app['columns.repository']->findBy(['tabela' => $table]);
 
-    return $app['twig']->render('table.html.twig', ['columns' => $columns, 'table' => $table]);
+    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+
+    return $app['twig']->render('table.html.twig', ['columns' => $columns, 'table' => $table, 'tables' => $tables]);
 
 });
 
@@ -76,11 +157,19 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     $queryString = " SELECT ";
 
-    foreach ($select as $item) {
-        $queryString .= $arrayColumns[$item] . ', ';
-    }
+    if (count($select) == count($arrayColumns)) {
 
-    $queryString = substr($queryString, 0, -2);
+        $queryString .= " * ";
+
+    } else {
+
+        foreach ($select as $item) {
+            $queryString .= $arrayColumns[$item] . ', ';
+        }
+
+        $queryString = substr($queryString, 0, -2);
+
+    }
 
     $queryString .= " FROM " . $table->getNome() . PHP_EOL;
 
@@ -126,7 +215,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
         $queryString .= " LIMIT " . $limit;
     }
 
-    $nome = 'Busca na Tabela ' . $table->getNome() . ' ' .date('dmYHis');
+    $nome = 'Busca na Tabela ' . $table->getNome() . ' ' . date('dmYHis');
 
     $query = new Queries();
     $query->setNome($nome);
@@ -194,16 +283,16 @@ $app->post('/query/edit/save', function (Request $request) use ($app) {
 $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     if (!$id) {
-        throw new InvalidArgumentException("FATAL ERROR", 501);
+        throw new InvalidArgumentException("FATAL ERROR", JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    $params = $request->query->all();
-    $p = [];
+    $paramsFromRequest = $request->query->all();
+    $pR = [];
 
-    if (!empty($params)) {
+    if (!empty($paramsFromRequest)) {
 
-        foreach ($params as $key => $param) {
-            $p[$key] = $param;
+        foreach ($paramsFromRequest as $key => $param) {
+            $pR[$key] = $param;
         }
 
     }
@@ -211,7 +300,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
     $query = $app['queries.repository']->find($id);
 
     if (!$query) {
-        throw new ReportException("Query não Encontrada.");
+        throw new ReportException("Query não Encontrada.", JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     $string = $query->getQuery();
@@ -221,9 +310,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
     $slug = strstr($string, ':');
     $key = strrpos($slug, ':');
     $resultado = substr($slug, 0, $key + 1);
-
     $itens = explode(',', str_replace(' ', ',', $resultado));
-
 
     foreach ($itens as $item) {
 
@@ -234,17 +321,90 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $parametros[] = $item;
         }
 
-
     }
 
-    if (!empty($p) && false != $p) {
-        foreach ($p as $key => $item) {
-            $string = str_replace($key, $item, $string);
+    if (!empty($pR) && false != $pR) {
+        foreach ($pR as $key => $item) {
+            $string = str_replace(':' . $key . ':', $item, $string);
         }
-
     }
 
     $log = $result = $colunas = [];
+    $arrayResult = [];
+
+    if ($parametros && !empty($request->query->all()) || empty($parametros)) {
+
+        try {
+            $result = $app['db']->fetchAll($string);
+        } catch (Exception $e) {
+            $log = $e->getMessage();
+        }
+
+        echo '<pre>';
+
+        if ($result) {
+
+            $arrayColumns = [];
+
+            $table = $query->getTabela();
+            $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+
+            foreach ($columns as $key => $column) {
+                $arrayColumns[$column->getNome()]['id'] = $column->getId();
+                $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
+                $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
+            }
+
+            foreach ($result as $itens) {
+
+                foreach ($itens as $key => $item) {
+
+                    if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
+                        ;
+
+                        $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
+                        $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
+
+                        $itens[$key] = ['valor' => $item];
+                        $itens[$key]['coluna'] = $key;
+                        $itens[$key]['tabela'] = $arrayColumns[$key]['tabelaNome'];
+                        $itens[$key]['label'] = null;
+
+                        foreach ($columnsB as $ke => $cs) {
+                            if ($cs->getNome() == $arrayColumns[$key]['nome'] && $cs->getLabel()) {
+                                $itens[$key]['label'] = $cs->getNome();
+                            }
+                        }
+                    }
+                }
+                $arrayResult[] = $itens;
+            }
+
+            echo '</pre>';
+
+            $colunas = array_keys(current($result));
+            $colunas = array_map(function ($coluna) {
+                return ucwords(str_replace('_', ' ', $coluna));
+            }, $colunas);
+        }
+    }
+
+    return $app['twig']->render('execute.html.twig',
+        [
+            'result' => $arrayResult,
+            'columns' => $colunas,
+            'log' => $log,
+            'query' => $query,
+            'parametros' => $parametros
+        ]);
+
+});
+
+$app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $valor) use ($app) {
+
+    $colunas = $result = $log = [];
+
+    $string = " SELECT * FROM {$tabela} WHERE {$coluna} = {$valor} ";
 
     try {
         $result = $app['db']->fetchAll($string);
@@ -260,7 +420,13 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
     }
 
     return $app['twig']->render('execute.html.twig',
-        ['result' => $result, 'columns' => $colunas, 'log' => $log, 'query' => $query, 'parametros' => $parametros]);
+        [
+            'result' => $result,
+            'columns' => $colunas,
+            'log' => $log,
+            'query' => null,
+            'parametros' => null
+        ]);
 
 });
 

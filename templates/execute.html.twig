@@ -5,7 +5,7 @@
 
         <div class="panel panel-default">
 
-            <div class="panel-heading">Tabelas</div>
+            <div class="panel-heading"><b>RUN</b></div>
 
             <div class="panel-body">
 
@@ -18,98 +18,102 @@
 
                 {% if parametros|length > 0 %}
 
-                <div class="panel panel-info">
+                    <div class="panel panel-default">
 
-                    <div class="panel-heading">Formulário</div>
+                        <div class="panel-heading">Formulário</div>
 
-                    <div class="panel-body">
+                        <div class="panel-body">
 
-                        <div class="alert alert-info">
-                            <p>Esta Query possui Parametros</p>
-                        </div>
+                            <div class="alert alert-info">
+                                <p>Esta Query possui Parametros</p>
+                            </div>
 
-                        <form class="form-horizontal">
+                            <form class="form-horizontal">
 
-                            {% for parametro in parametros %}
+                                {% for parametro in parametros %}
 
-                                <input type="hidden"  id="{{ parametro }}-i">
+                                    <input type="hidden" id="{{ parametro }}-i">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">{{ parametro }}:</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control parametro"
+                                                   data-param="{{ parametro }}"
+                                                   name="{{ parametro }}" id="{{ parametro }}"/>
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2">{{ parametro }}:</label>
+                                    <label class="control-label col-sm-2">Query:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control parametro" data-param="{{ parametro }}"
-                                               name="{{ parametro }}" id="{{ parametro }}"/>
+                                        <pre><textarea class="form-control" id="query-view"
+                                                       rows="12">{{ query.query }}</textarea></pre>
                                     </div>
                                 </div>
 
-                            {% endfor %}
-
-                            <div class="form-group">
-                                <label class="control-label col-sm-2">Query:</label>
-                                <div class="col-sm-10">
-                                        <pre><textarea class="form-control" id="query-view"
-                                                       rows="12">{{ query.query }}</textarea></pre>
-                                </div>
-                            </div>
-
-                            <button class="btn btn-info">Executar</button>
+                                <button class="btn btn-info">Executar</button>
 
 
-                        </form>
+                            </form>
 
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {% endif %}
-
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="true">
-                    Exportar
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="#" class="export" data-type="excel">EXCEL</a></li>
-                    <li><a href="#" class="export" data-type="pdf">PDF</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#" class="export" data-type="json">JSON</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#" class="export" datatype="csv">CSV</a></li>
-                </ul>
-            </div>
-
-
-            <table class="table table-bordered table-responsive table-hover"
-                   data-toggle="table" data-striped="true" data-search="true"
-                   data-show-toggle="true" data-show-columns="true" data-pagination="true" id="tableExport">
-
-                {% if columns|length > 0 %}
-                    <thead>
-                    <tr>
-                        {% for column in columns %}
-                            <th>{{ column }}</th>
-                        {% endfor %}
-                    </tr>
-                    </thead>
                 {% endif %}
 
-                <tbody>
-                {% for itens in result %}
-                    <tr>
-                        {% for item in itens %}
-                            <td>{{ item }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-                </tbody>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="true">
+                        Exportar
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" class="export" data-type="excel">EXCEL</a></li>
+                        <li><a href="#" class="export" data-type="pdf">PDF</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#" class="export" data-type="json">JSON</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#" class="export" datatype="csv">CSV</a></li>
+                    </ul>
+                </div>
 
-            </table>
 
+                <table class="table table-bordered table-responsive table-hover"
+                       data-toggle="table" data-striped="true" data-search="true"
+                       data-show-toggle="true" data-show-columns="true" data-pagination="true" id="tableExport">
+
+                    {% if columns|length > 0 %}
+                        <thead>
+                        <tr>
+                            {% for column in columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                    {% endif %}
+
+                    <tbody>
+                    {% for itens in result %}
+                        <tr>
+                            {% for item in itens %}
+                                {% if item is iterable %}
+                                    <td><a href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
+                                            {% if item.label > 0 %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a></td>
+                                {% else %}
+                                    <td>{{ item }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
         </div>
-
-    </div>
-
     </div>
 
 {% endblock %}
@@ -131,7 +135,7 @@
                 }
 
                 var nomeParam = $(this).data('param');
-                var item = $("#"+nomeParam+"-i");
+                var item = $("#" + nomeParam + "-i");
 
                 if (!item.val()) {
                     item.val(valor);
@@ -165,7 +169,7 @@
 
                 $('#tableExport').tableExport({
                     separator: separator,
-                    tableName: '{{ query.nome }}',
+                    tableName: '{% if query|length > 0 %}{{ query.nome }}{% endif %}',
                     type: $(this).data('type'),
                     escape: 'false',
                     pdfFontSize: 11,
