@@ -422,8 +422,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $log = $e->getMessage();
         }
 
-        echo '<pre>';
-
         if ($result) {
 
             $arrayColumns = [];
@@ -433,6 +431,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
             foreach ($columns as $key => $column) {
                 $arrayColumns[$column->getNome()]['id'] = $column->getId();
+                $arrayColumns[$column->getNome()]['visualizar'] = $column->isVisualizar();
                 $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
                 $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
             }
@@ -440,6 +439,14 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             foreach ($result as $itens) {
 
                 foreach ($itens as $key => $item) {
+
+                    if (isset($arrayColumns[$key]) && !$arrayColumns[$key]['visualizar']) {
+                        unset($itens[$key]);
+                    }
+
+                    if (!isset($arrayColumns[$key])) {
+                        continue;
+                    }
 
                     if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
 
@@ -450,26 +457,28 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                         $itens[$key]['coluna'] = $key;
                         $itens[$key]['tabela'] = $arrayColumns[$key]['tabelaNome'];
                         $itens[$key]['label'] = null;
+                        $itens[$key]['nome'] = $arrayColumns[$key]['nome'];
 
                         foreach ($columnsB as $cs) {
+
                             if ($cs->getLabel()) {
                                 $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$key} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $itens[$key]['label'] = $strColumn;
                             }
+
+                            if ($cs->getIdentificador() && $cs->getNome() == $arrayColumns[$key]['nome']) {
+                                $itens[$key]['nome'] = $cs->getIdentificador();
+                            }
+
                         }
                     }
                 }
                 $arrayResult[] = $itens;
+
             }
 
-            //var_dump($arrayResult);
-
-            //exit;
-
-            echo '</pre>';
-
-            $colunas = array_keys(current($result));
+            $colunas = array_keys(current($arrayResult));
             $colunas = array_map(function ($coluna) {
                 return ucwords(str_replace('_', ' ', $coluna));
             }, $colunas);

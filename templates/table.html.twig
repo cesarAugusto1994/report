@@ -165,8 +165,9 @@
                                     </button>
                                 {% endif %}</td>
 
-                            <td><input type="checkbox" data-coluna="{{ column.id }}" class="form-control btnSetShow" value="{{ column.visualizar }}"
-                               {% if column.visualizar is not empty %}checked{% endif %}/></td>
+                            <td><input type="checkbox" data-coluna="{{ column.id }}" class="form-control btnSetShow"
+                                       value="{{ column.visualizar }}"
+                                       {% if column.visualizar is not empty %}checked{% endif %}/></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -204,7 +205,8 @@
                         data.mensagem,
                         'success'
                     ).then(
-                        function () {})
+                        function () {
+                        })
 
                 })
                     .fail(function (data) {
