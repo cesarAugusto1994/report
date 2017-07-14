@@ -98,6 +98,88 @@ $app->post('/api/vincular-coluna-tabela', function (Request $request) use ($app)
 
 });
 
+$app->post('/api/adicionar-identificador-coluna', function (Request $request) use ($app) {
+
+    $coluna = $request->request->get('coluna');
+    $identificador = $request->request->get('identificador');
+
+    try {
+        /**
+         * @var Colunas $column
+         */
+        $column = $app['columns.repository']->find($coluna);
+        $column->setIdentificador($identificador);
+        $app['columns.repository']->save($column);
+
+        return $app->json([
+            'classe' => 'sucesso',
+            'mensagem' => 'Identificador Adicionado com Sucesso.'
+        ], JsonResponse::HTTP_CREATED);
+
+    } catch (Exception $e) {
+
+        return $app->json([
+            'classe' => 'erro',
+            'mensagem' => $e->getMessage()
+        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+
+    }
+});
+
+$app->post('/api/tratar-mostrar-coluna', function (Request $request) use ($app) {
+
+    $coluna = $request->request->get('coluna');
+
+    try {
+        /**
+         * @var Colunas $column
+         */
+        $column = $app['columns.repository']->find($coluna);
+        $column->setVisualizar(!$column->isVisualizar());
+        $app['columns.repository']->save($column);
+
+        return $app->json([
+            'classe' => 'sucesso',
+            'mensagem' => 'Coluna Tratada com Sucesso.'
+        ], JsonResponse::HTTP_CREATED);
+
+    } catch (Exception $e) {
+
+        return $app->json([
+            'classe' => 'erro',
+            'mensagem' => $e->getMessage()
+        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+
+    }
+});
+
+$app->post('/api/adicionar-label', function (Request $request) use ($app) {
+
+    $coluna = $request->request->get('coluna');
+
+    try {
+        /**
+         * @var Colunas $column
+         */
+        $column = $app['columns.repository']->find($coluna);
+        $column->setLabel(!$column->getLabel());
+        $app['columns.repository']->save($column);
+
+        return $app->json([
+            'classe' => 'sucesso',
+            'mensagem' => 'Label Tratada com Sucesso.'
+        ], JsonResponse::HTTP_CREATED);
+
+    } catch (Exception $e) {
+
+        return $app->json([
+            'classe' => 'erro',
+            'mensagem' => $e->getMessage()
+        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
+
+    }
+});
+
 $app->get('/tabela/{nome}', function ($nome) use ($app) {
 
     /**
@@ -360,7 +442,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 foreach ($itens as $key => $item) {
 
                     if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
-                        ;
 
                         $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
                         $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
@@ -370,15 +451,21 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                         $itens[$key]['tabela'] = $arrayColumns[$key]['tabelaNome'];
                         $itens[$key]['label'] = null;
 
-                        foreach ($columnsB as $ke => $cs) {
-                            if ($cs->getNome() == $arrayColumns[$key]['nome'] && $cs->getLabel()) {
-                                $itens[$key]['label'] = $cs->getNome();
+                        foreach ($columnsB as $cs) {
+                            if ($cs->getLabel()) {
+                                $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$key} = {$item}";
+                                $strColumn = $app['db']->fetchColumn($string);
+                                $itens[$key]['label'] = $strColumn;
                             }
                         }
                     }
                 }
                 $arrayResult[] = $itens;
             }
+
+            //var_dump($arrayResult);
+
+            //exit;
 
             echo '</pre>';
 

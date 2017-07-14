@@ -101,7 +101,7 @@
                             {% for item in itens %}
                                 {% if item is iterable %}
                                     <td><a href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
-                                            {% if item.label > 0 %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a></td>
+                                            {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a></td>
                                 {% else %}
                                     <td>{{ item }}</td>
                                 {% endif %}

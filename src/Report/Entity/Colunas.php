@@ -69,6 +69,18 @@ class Colunas
     private $label;
 
     /**
+     * @ORM\Column(name="identificador", type="string")
+     * @var string
+     */
+    private $identificador;
+
+    /**
+     * @ORM\Column(name="visualizar", type="boolean")
+     * @var boolean
+     */
+    private $visualizar = 1;
+
+    /**
      * @return int
      */
     public function getId()
@@ -125,11 +137,51 @@ class Colunas
     }
 
     /**
+     * @param bool $label
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+    }
+
+    /**
      * @return mixed
      */
     public function getLabel()
     {
         return $this->label;
+    }
+
+    /**
+     * @param string $identificador
+     */
+    public function setIdentificador($identificador)
+    {
+        $this->identificador = $identificador;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentificador()
+    {
+        return $this->identificador;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVisualizar()
+    {
+        return $this->visualizar;
+    }
+
+    /**
+     * @param bool $visualizar
+     */
+    public function setVisualizar($visualizar)
+    {
+        $this->visualizar = $visualizar;
     }
 
     /**

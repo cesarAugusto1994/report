@@ -2,27 +2,27 @@
 
 {% block css %}
 
-<style>
+    <style>
 
-    .buttonsi > button {
-        display: none;
-    }
+        .buttonsi > button {
+            display: none;
+        }
 
-    .buttonsi > .btn-group{
-        display: none;
-    }
+        .buttonsi > .btn-group {
+            display: none;
+        }
 
-    tr:hover > .buttonsi > button{
-        float: right;
-        display: table;
-    }
+        .buttonsi:hover > button {
+            float: right;
+            display: table;
+        }
 
-    tr:hover > .buttonsi > .btn-group{
-        float: right;
-        display: table;
-    }
+        .buttonsi:hover > .btn-group {
+            float: right;
+            display: table;
+        }
 
-</style>
+    </style>
 
 {% endblock %}
 
@@ -101,29 +101,72 @@
                     <tr>
                         <th>Coluna</th>
                         <th>Tipo</th>
-                        <th>É Chave Primaria</th>
+                        <th>Chave Primária</th>
+                        <th>Label</th>
+                        <th>Identificador</th>
                         <th>Tabela Referenciada</th>
+                        <th>Mostrar</th>
                     </tr>
                     </thead>
 
                     <tbody>
                     {% for column in columns %}
                         <tr>
-                            <td><a>{{ column.nome }}</a></td>
+                            <td>{{ column.nome }}</td>
                             <td>{{ column.tipo|upper }}</td>
                             <td>{% if column.chavePrimaria %}Sim{% else %}Não{% endif %}</td>
+                            <td class="buttonsi">{% if column.label %}Sim{% else %}Não{% endif %}
+
+                                {% if column.label is empty %}
+                                    <button data-coluna="{{ column.id }}" data-acao="Adicionar" class="btn
+                                btn-success btn-xs btnAddLabel">
+                                        Adicionar
+                                    </button>
+                                {% else %}
+                                    <button data-coluna="{{ column.id }}" data-acao="Remover" class="btn
+                                btn-danger btn-xs btnAddLabel">
+                                        Remover
+                                    </button>
+                                {% endif %}
+
+                            </td>
+
+                            <td class="buttonsi">{{ column.identificador }}
+                                {% if column.identificador is not empty %}
+                                    <button data-coluna="{{ column.id }}" class="btn
+                                btn-primary btn-xs btnAddIdentificado">
+                                        Editar
+                                    </button>
+                                {% else %}
+                                    <button data-coluna="{{ column.id }}" class="btn
+                                btn-success btn-xs btnAddIdentificado">
+                                        Adicionar
+                                    </button>
+                                {% endif %}
+
+                            </td>
+
                             <td class="buttonsi">{% if column.tabelaRef|length > 0 %}<a
-                                    href="/tabela/{{ column.tabelaRef.nome }}">{{ column.tabelaRef.nome }}</a>
+                                    href="/tabela/{{ column.tabelaRef.nome }}">
+                                    {{ column.tabelaRef.nome }}</a>
 
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button data-coluna="{{ column.id }}" class="btn btn-sm btnAddTabela">Tocar</button>
-                                        <button data-coluna="{{ column.id }}" class="btn btn-sm btnARmTabela">Remover</button>
+                                        <button data-coluna="{{ column.id }}"
+                                                class="btn btn-primary btn-xs btnAddTabela">Tocar
+                                        </button>
+                                        <button data-coluna="{{ column.id }}"
+                                                class="btn btn-danger btn-xs btnARmTabela">Remover
+                                        </button>
                                     </div>
 
                                 {% else %}
-                                    <button data-coluna="{{ column.id }}" class="btn btn-sm btnAddTabela">
-                                        Adicionar</button>
+                                    <button data-coluna="{{ column.id }}" class="btn btn-success btn-xs btnAddTabela">
+                                        Adicionar
+                                    </button>
                                 {% endif %}</td>
+
+                            <td><input type="checkbox" data-coluna="{{ column.id }}" class="form-control btnSetShow" value="{{ column.visualizar }}"
+                               {% if column.visualizar is not empty %}checked{% endif %}/></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -144,6 +187,80 @@
 
         $(document).ready(function () {
 
+            $('.btnSetShow').change(function () {
+
+                var _this = $(this);
+
+                $.post({
+                    type: "POST",
+                    url: '/api/tratar-mostrar-coluna',
+                    data: {
+                        coluna: _this.data('coluna')
+                    }
+                }).done(function (data) {
+
+                    swal(
+                        'Sucesso!',
+                        data.mensagem,
+                        'success'
+                    ).then(
+                        function () {})
+
+                })
+                    .fail(function (data) {
+                        swal(
+                            'Error!',
+                            data.mensagem,
+                            'error'
+                        )
+                    });
+
+            });
+
+
+            $('.btnAddLabel').click(function () {
+
+                var _this = $(this);
+
+                swal({
+                    title: 'Atenção',
+                    text: "Deseja " + _this.data('acao') + " esta Label?",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Cancelar'
+                }).then(function () {
+
+                    $.post({
+                        type: "POST",
+                        url: '/api/adicionar-label',
+                        data: {
+                            coluna: _this.data('coluna')
+                        }
+                    }).done(function (data) {
+
+                        swal(
+                            'Sucesso!',
+                            data.mensagem,
+                            'success'
+                        ).then(
+                            function () {
+                                window.location.reload();
+                            })
+
+                    })
+                        .fail(function () {
+                            swal(
+                                'Error!',
+                                data.mensagem,
+                                'error'
+                            )
+                        });
+
+                })
+
+            });
+
             $('.btnARmTabela').click(function () {
 
                 var _this = $(this);
@@ -162,7 +279,7 @@
                         'success'
                     ).then(
                         function () {
-                            //parent.window.location.href = redirect;
+                            window.location.reload();
                         })
 
                 })
@@ -182,7 +299,7 @@
 
                 $.get('/api/tabelas', function (data) {
                     swal({
-                        title: 'Slecione uma Tabela',
+                        title: 'Selecione uma Tabela',
                         input: 'select',
                         inputOptions: data,
                         inputPlaceholder: 'Selecione a Tabela',
@@ -214,7 +331,7 @@
                                 'success'
                             ).then(
                                 function () {
-                                    //parent.window.location.href = redirect;
+                                    window.location.reload();
                                 })
 
                         })
@@ -229,6 +346,57 @@
                     })
                 });
 
+
+            })
+
+            $('.btnAddIdentificado').click(function () {
+
+                var _this = $(this);
+
+                swal({
+                    title: 'Identificador',
+                    input: 'text',
+                    inputPlaceholder: 'Selecione a Tabela',
+                    showCancelButton: true,
+                    inputValidator: function (value) {
+                        _this.val(value);
+                        return new Promise(function (resolve, reject) {
+                            if (value !== '') {
+                                resolve()
+                            } else {
+                                reject('Selecione uma tabela válida')
+                            }
+                        })
+                    }
+                }).then(function (result) {
+
+                    $.post({
+                        type: "POST",
+                        url: '/api/adicionar-identificador-coluna',
+                        data: {
+                            identificador: _this.val(),
+                            coluna: _this.data('coluna')
+                        }
+                    }).done(function (data) {
+
+                        swal(
+                            'Sucesso!',
+                            data.mensagem,
+                            'success'
+                        ).then(
+                            function () {
+                                window.location.reload();
+                            })
+
+                    })
+                        .fail(function (data) {
+                            swal(
+                                'Error!',
+                                data.mensagem,
+                                'error'
+                            )
+                        });
+                })
 
             })
 
