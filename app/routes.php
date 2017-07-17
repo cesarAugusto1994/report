@@ -247,6 +247,8 @@ $app->post('/query/create', function (Request $request) use ($app) {
     $table = $app['tables.repository']->find($table);
     $columns = $app['columns.repository']->findBy(['tabela' => $table]);
 
+    $alias = substr($table->getNome(), 0, 3);
+
     $arrayColumns = [];
 
     foreach ($columns as $column) {
@@ -257,12 +259,12 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     if (count($select) == count($arrayColumns)) {
 
-        $queryString .= " * ";
+        $queryString .= $alias . ".* ";
 
     } else {
 
         foreach ($select as $item) {
-            $queryString .= $arrayColumns[$item] . ', ';
+            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
         }
 
         $queryString = substr($queryString, 0, -2);
@@ -278,9 +280,9 @@ $app->post('/query/create', function (Request $request) use ($app) {
         foreach ($where as $key => $item) {
 
             if (0 == $key) {
-                $queryString .= $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
+                $queryString .= $alias . '.' . $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
             } else {
-                $queryString .= " AND " . $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
+                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
             }
         }
 
@@ -291,7 +293,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
         $queryString .= " GROUP BY ";
 
         foreach ($groupBy as $item) {
-            $queryString .= $arrayColumns[$item] . ', ';
+            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
         }
 
         $queryString = substr($queryString, 0, -2) . PHP_EOL;
@@ -302,7 +304,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
         $queryString .= " ORDER BY ";
 
         foreach ($orderBy as $item) {
-            $queryString .= $arrayColumns[$item] . ', ';
+            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
         }
 
         $queryString = substr($queryString, 0, -2) . PHP_EOL;

@@ -2,28 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fa8bc757-59b1-4281-86ad-edeaac5423e5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Front/query-new.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/query-new.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/.bower.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/LICENSE" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/PATENTS" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/bower.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-dom-server.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-dom-server.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-dom.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-dom.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-with-addons.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react-with-addons.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/assets/vendor/react/react.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/webpack.config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/routes.php" afterPath="$PROJECT_DIR$/app/routes.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Report/Entity/Tabelas.php" afterPath="$PROJECT_DIR$/src/Report/Entity/Tabelas.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/layout.html.twig" afterPath="$PROJECT_DIR$/templates/layout.html.twig" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/table.html.twig" afterPath="$PROJECT_DIR$/templates/table.html.twig" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -85,7 +64,34 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="routes.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/routes.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2315">
+              <caret line="317" column="74" lean-forward="false" selection-start-line="317" selection-start-column="74" selection-end-line="317" selection-end-column="74" />
+              <folding>
+                <element signature="e#87#118#0#PHP" expanded="true" />
+                <marker date="1500312794581" expanded="true" signature="14211:14239" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14240" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14275" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14282" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14288" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14291" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="14211:14298" ph="SELECT ${{$c... " />
+                <marker date="1500312794581" expanded="true" signature="16054:16068" ph="SELECT * FRO... $" />
+                <marker date="1500312794581" expanded="true" signature="16054:16077" ph="SELECT * FRO... " />
+                <marker date="1500312794581" expanded="true" signature="16054:16083" ph="SELECT * FRO... $" />
+                <marker date="1500312794581" expanded="true" signature="16054:16084" ph="SELECT * FRO... $" />
+                <marker date="1500312794581" expanded="true" signature="16054:16093" ph="SELECT * FRO... $" />
+                <marker date="1500312794581" expanded="true" signature="16054:16096" ph="SELECT * FRO... $" />
+                <marker date="1500312794581" expanded="true" signature="16054:16104" ph="SELECT * FRO... $" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -156,7 +162,6 @@
         <option value="$PROJECT_DIR$/templates/index.html.twig" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console_4.sql" />
         <option value="$PROJECT_DIR$/src/Report/Repository/ColunasRepository.php" />
-        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql" />
         <option value="$PROJECT_DIR$/src/Report/Entity/Colunas.php" />
         <option value="$PROJECT_DIR$/templates/query-edit.html.twig" />
         <option value="$PROJECT_DIR$/templates/execute.html.twig" />
@@ -167,8 +172,9 @@
         <option value="$PROJECT_DIR$/templates/query-new.html.twig" />
         <option value="$PROJECT_DIR$/src/Report/Entity/Tabelas.php" />
         <option value="$PROJECT_DIR$/src/Front/query-new.js" />
-        <option value="$PROJECT_DIR$/app/routes.php" />
         <option value="$PROJECT_DIR$/templates/table.html.twig" />
+        <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql" />
+        <option value="$PROJECT_DIR$/app/routes.php" />
       </list>
     </option>
   </component>
@@ -537,17 +543,19 @@
       <workItem from="1499944551830" duration="31644000" />
       <workItem from="1500031700519" duration="11625000" />
       <workItem from="1500050853672" duration="17002000" />
-      <workItem from="1500289925325" duration="17288000" />
+      <workItem from="1500289925325" duration="18209000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="115399000" />
+    <option name="totallyTimeSpent" value="116320000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14870094" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33978495" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14870094" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2238806" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -562,7 +570,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33978495" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -860,13 +867,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="32" column="54" lean-forward="false" selection-start-line="32" selection-start-column="44" selection-end-line="32" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/queries.html.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="609">
@@ -953,30 +953,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/routes.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="26" column="18" lean-forward="false" selection-start-line="26" selection-start-column="18" selection-end-line="26" selection-end-column="18" />
-          <folding>
-            <element signature="e#87#118#0#PHP" expanded="true" />
-            <marker date="1500311548066" expanded="true" signature="14080:14108" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14109" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14144" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14151" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14157" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14160" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="14080:14167" ph="SELECT ${{$c... " />
-            <marker date="1500311548066" expanded="true" signature="15923:15937" ph="SELECT * FRO... $" />
-            <marker date="1500311548066" expanded="true" signature="15923:15946" ph="SELECT * FRO... " />
-            <marker date="1500311548066" expanded="true" signature="15923:15952" ph="SELECT * FRO... $" />
-            <marker date="1500311548066" expanded="true" signature="15923:15953" ph="SELECT * FRO... $" />
-            <marker date="1500311548066" expanded="true" signature="15923:15962" ph="SELECT * FRO... $" />
-            <marker date="1500311548066" expanded="true" signature="15923:15965" ph="SELECT * FRO... $" />
-            <marker date="1500311548066" expanded="true" signature="15923:15973" ph="SELECT * FRO... $" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/table.html.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -1006,6 +982,43 @@
         <state relative-caret-position="357">
           <caret line="17" column="13" lean-forward="false" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding>
+            <marker date="1500312143237" expanded="true" signature="1:115" ph="SELECT TABLE... TABLES" />
+            <marker date="1500312143237" expanded="true" signature="118:315" ph="SELECT quilo... abastecimentos" />
+            <marker date="1500312143237" expanded="true" signature="318:580" ph="SELECT t.id COLUMNS" />
+            <marker date="1500312143237" expanded="true" signature="619:665" ph="SELECT * FRO... pessoas" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/routes.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2315">
+          <caret line="317" column="74" lean-forward="false" selection-start-line="317" selection-start-column="74" selection-end-line="317" selection-end-column="74" />
+          <folding>
+            <element signature="e#87#118#0#PHP" expanded="true" />
+            <marker date="1500312794581" expanded="true" signature="14211:14239" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14240" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14275" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14282" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14288" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14291" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="14211:14298" ph="SELECT ${{$c... " />
+            <marker date="1500312794581" expanded="true" signature="16054:16068" ph="SELECT * FRO... $" />
+            <marker date="1500312794581" expanded="true" signature="16054:16077" ph="SELECT * FRO... " />
+            <marker date="1500312794581" expanded="true" signature="16054:16083" ph="SELECT * FRO... $" />
+            <marker date="1500312794581" expanded="true" signature="16054:16084" ph="SELECT * FRO... $" />
+            <marker date="1500312794581" expanded="true" signature="16054:16093" ph="SELECT * FRO... $" />
+            <marker date="1500312794581" expanded="true" signature="16054:16096" ph="SELECT * FRO... $" />
+            <marker date="1500312794581" expanded="true" signature="16054:16104" ph="SELECT * FRO... $" />
+          </folding>
         </state>
       </provider>
     </entry>
