@@ -148,7 +148,7 @@
 
                             <td class="buttonsi">{% if column.tabelaRef|length > 0 %}<a
                                     href="/tabela/{{ column.tabelaRef.nome }}">
-                                    {{ column.tabelaRef.nome }}</a>
+                                    {{ column.tabelaRef.nome|capitalize }}</a>
 
                                     <div class="btn-group" role="group" aria-label="...">
                                         <button data-coluna="{{ column.id }}"

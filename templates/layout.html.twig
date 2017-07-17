@@ -7,7 +7,8 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css">
 
     {% block css %}{% endblock %}
@@ -20,6 +21,10 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/js/bootstrap-select.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>
+
+    <script src="{{ asset('assets/vendor/react/react.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/react/react-dom.min.js') }}"></script>
+    <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
 
     <script type="text/javascript" src="{{ asset('assets/tableExport/tableExport.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/tableExport/jquery.base64.js') }}"></script>
@@ -69,7 +74,8 @@
 
     </div><!-- /.container-fluid -->
 </nav>
-    {% block content %}{% endblock %}
-    {% block js %}{% endblock %}
+{% block content %}{% endblock %}
+<script src="{{ asset('assets/build/bundle.js') }}"></script>
+{% block js %}{% endblock %}
 </body>
 </html>

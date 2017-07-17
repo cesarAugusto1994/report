@@ -74,6 +74,13 @@ class Tabelas
         return $this->schema;
     }
 
+    /**
+     * @return mixed|string
+     */
+    public function getNomeFormatado()
+    {
+        return ucwords(str_replace('_', ' ', $this->nome));
+    }
 
 }
 

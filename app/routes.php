@@ -27,12 +27,28 @@ $app->get('/api/tabelas', function () use ($app) {
     $retorno = [];
 
     foreach ($tables as $table) {
-        $retorno[$table->getId()] = $table->getNome();
+        $retorno[$table->getId()] = $table->getNomeFormatado();
     }
 
     return new JsonResponse($retorno);
 });
 
+$app->get('/api/tabela/{id}/colunas', function ($id) use ($app) {
+
+    $table = $app['tables.repository']->find($id);
+    $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+
+    $retorno = [];
+
+    foreach ($columns as $column) {
+        $retorno[] = [
+            'id' => $column->getId(),
+            'nome' => $column->getNomeFormatado(),
+        ];
+    }
+
+    return new JsonResponse($retorno);
+});
 
 $app->post('/api/remover-vinculo-coluna-tabela', function (Request $request) use ($app) {
 
@@ -505,10 +521,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 $arrayResult[] = $retorno;
             }
 
-            echo '<pre>';
-
-            //var_dump($arrayResult);
-
             foreach ($arrayResult as $cols) {
                 foreach ($cols as $key => $col) {
                     $colunas[] = isset($col['nome']) ? $col['nome'] : $key;
@@ -520,7 +532,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 return ucwords(str_replace('_', ' ', $coluna));
             }, $colunas);
 
-            echo '</pre>';
         }
     }
 
@@ -532,6 +543,20 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'query' => $query,
             'parametros' => $parametros
         ]);
+
+});
+
+$app->get('/query/new', function () use ($app) {
+
+    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+
+    /**
+     * @var EntityManager $query
+     */
+    $table = $app['tables.repository']->find(1);
+    $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+
+    return $app['twig']->render('query-new.html.twig', ['tables' => $tables, 'columns' => $columns, 'table' => $table]);
 
 });
 
