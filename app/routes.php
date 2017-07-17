@@ -196,19 +196,32 @@ $app->post('/api/adicionar-label', function (Request $request) use ($app) {
     }
 });
 
-$app->get('/tabela/{nome}', function ($nome) use ($app) {
+$app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
     /**
      * @var EntityManager $query
      */
     $table = $app['tables.repository']->findOneBy(['nome' => $nome]);
     $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+    $queries = $app['queries.repository']->findBy(['tabela' => $table]);
+
+    $tablesUnion = $app['columns.repository']->findBy(['tabelaRef' => $table]);
+
+    $tablesUnion = array_filter($tablesUnion, function ($item) use ($table) {
+        return $item !== $table;
+    });
 
     $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
 
-    return $app['twig']->render('table.html.twig', ['columns' => $columns, 'table' => $table, 'tables' => $tables]);
+    return $app['twig']->render('table.html.twig', [
+        'queries' => $queries,
+        'columns' => $columns,
+        'table' => $table,
+        'tables' => $tables,
+        'union' => $tablesUnion
+    ]);
 
-});
+})->bind('tabela');
 
 $app->get('/queries', function () use ($app) {
 
@@ -233,12 +246,13 @@ $app->get('/query/edit/{id}', function ($id) use ($app) {
 
     return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query]);
 
-});
+})->bind('query_edit');
 
 $app->post('/query/create', function (Request $request) use ($app) {
 
     $table = $nome = $request->request->get('table');
     $select = $nome = $request->request->get('select');
+    $inner = $nome = $request->request->get('inner');
     $where = $nome = $request->request->get('where');
     $groupBy = $nome = $request->request->get('groupBy');
     $orderBy = $nome = $request->request->get('orderBy');
@@ -247,7 +261,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
     $table = $app['tables.repository']->find($table);
     $columns = $app['columns.repository']->findBy(['tabela' => $table]);
 
-    $alias = substr($table->getNome(), 0, 3);
+    $alias = $table->getNome();
 
     $arrayColumns = [];
 
@@ -271,7 +285,19 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     }
 
-    $queryString .= " FROM " . $table->getNome() . PHP_EOL;
+    $queryString .= " FROM " . $table->getNome() . ' ' . $alias . PHP_EOL;
+
+    if (!empty($inner)) {
+
+        foreach ($inner as $key => $item) {
+
+            $coluna = $app['columns.repository']->find($item);
+            $table = $app['tables.repository']->find($coluna->getTabela());
+
+            $queryString .= " INNER JOIN " . $table->getNome() . " " . $table->getNome() . " USING (" . $coluna->getNome() . ")" . PHP_EOL;
+        }
+
+    }
 
     if (!empty($where)) {
 
@@ -321,10 +347,11 @@ $app->post('/query/create', function (Request $request) use ($app) {
     $query->setNome($nome);
     $query->setTabela($table);
     $query->setQuery($queryString);
+    $query->setQueryString(false);
 
     $app['queries.repository']->save($query);
 
-    return $app->redirect('/queries');
+    return $app->redirect('/execute/' . $query->getId());
 
 });
 
@@ -340,6 +367,7 @@ $app->post('/query/save', function (Request $request) use ($app) {
     $query->setNome($nome);
     $query->setTabela($tabela);
     $query->setQuery($queryString);
+    $query->setQueryString(true);
 
     $app['queries.repository']->save($query);
 
@@ -440,6 +468,24 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $log = $e->getMessage();
         }
 
+        if ($query->isQueryString()) {
+
+            $colunas = array_keys(current($result));
+
+            $colunas = array_map(function ($coluna) {
+                return ucwords(str_replace('_', ' ', $coluna));
+            }, $colunas);
+
+            return $app['twig']->render('execute.html.twig',
+                [
+                    'result' => $result,
+                    'columns' => $colunas,
+                    'log' => $log,
+                    'query' => $query,
+                    'parametros' => null
+                ]);
+        }
+
         if ($result) {
 
             $arrayColumns = [];
@@ -500,6 +546,16 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                             'nome' => $arrayColumns[$key]['identificador'] ?: $arrayColumns[$key]['nome'],
                         ];
 
+                        $nomesColunas = array_map(function ($coluna) {
+                            return $coluna->getNome();
+                        }, $columnsB);
+
+                        $chavePrimaria = array_filter($columnsB, function ($coluna) {
+                            return $coluna->isChavePrimaria();
+                        });
+
+                        $pk = !empty($chavePrimaria) ? current($chavePrimaria)->getNome() : null;
+
                         foreach ($columnsB as $cs) {
 
                             if ($cs->getLabel()) {
@@ -508,7 +564,13 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                     continue;
                                 }
 
-                                $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$key} = {$item}";
+                                $field = $key;
+
+                                if (!in_array($key, $nomesColunas)) {
+                                    $field = $pk;
+                                }
+
+                                $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
                             }
@@ -546,7 +608,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'parametros' => $parametros
         ]);
 
-});
+})->bind('query_execute');
 
 $app->get('/query/new', function () use ($app) {
 
@@ -566,7 +628,19 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
 
     $colunas = $result = $log = [];
 
-    $string = " SELECT * FROM {$tabela} WHERE {$coluna} = {$valor} ";
+    $table = $app['tables.repository']->findOneBy(['nome' => $tabela]);
+    $column = $app['columns.repository']->findOneBy(['nome' => $coluna, 'tabela' => $table]);
+    $key = !empty($column) ? $column->getNome() : null;
+
+    if (empty($column)) {
+        $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+        $col = array_filter($columns, function ($column) {
+            return $column->isChavePrimaria();
+        });
+        $key = current($col)->getNome() ?: null;
+    }
+
+    $string = " SELECT * FROM {$tabela} WHERE {$key} = {$valor} ";
 
     try {
         $result = $app['db']->fetchAll($string);

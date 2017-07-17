@@ -26,7 +26,7 @@
                     <tbody>
                     {% for table in tables %}
                         <tr>
-                            <td><a href="/tabela/{{ table.nome }}">{{ table.nome }}</a></td>
+                            <td><a href="/tabela/{{ table.nome }}">{{ table.nomeFormatado }}</a></td>
                             <td><input type="checkbox" {% if table.ativo %}checked{% endif %} class="form-control"/></td>
                         </tr>
                     {% else %}

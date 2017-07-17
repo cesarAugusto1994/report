@@ -189,6 +189,10 @@ class Colunas
      */
     public function getNomeFormatado()
     {
+        if ($this->identificador) {
+            return $this->identificador;
+        }
+
         return ucwords(str_replace('_', ' ', $this->nome));
     }
 

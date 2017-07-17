@@ -36,6 +36,12 @@ class Queries
     private $nome;
 
     /**
+     * @ORM\Column(name="query_string", type="boolean")
+     * @var boolean
+     */
+    private $queryString;
+
+    /**
      * @var \Tabelas
      *
      * @ORM\ManyToOne(targetEntity="Tabelas")
@@ -99,6 +105,22 @@ class Queries
     public function setTabela($tabela)
     {
         $this->tabela = $tabela;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isQueryString()
+    {
+        return $this->queryString;
+    }
+
+    /**
+     * @param bool $queryString
+     */
+    public function setQueryString($queryString)
+    {
+        $this->queryString = $queryString;
     }
 }
 

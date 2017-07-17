@@ -5,7 +5,10 @@
 
         <div class="panel panel-default">
 
-            <div class="panel-heading"><b>RUN</b></div>
+            <div class="panel-heading"><b>RUN</b>
+                {% if query is not empty %}
+                    <a href="{{ path('tabela', { nome : query.tabela.nome }) }}" class="btn btn-success pull-right">{{ query.tabela.nomeFormatado }}</a>
+                {% endif %}</div>
 
             <div class="panel-body">
 
@@ -65,6 +68,7 @@
 
                 {% endif %}
 
+
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
                             data-toggle="dropdown"
@@ -102,9 +106,10 @@
                         <tr>
                             {% for item in itens %}
                                 {% if item is iterable %}
-                                    <td>{% if item.tabela is not empty %}<a href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
+                                    <td>{% if item.tabela is not empty %}<a
+                                            href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
                                             {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a>
-                                    {% else %}{{ item.valor }}{% endif %}</td>
+                                        {% else %}{{ item.valor }}{% endif %}</td>
                                 {% else %}
                                     <td>{{ item }}</td>
                                 {% endif %}
