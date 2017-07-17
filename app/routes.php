@@ -433,12 +433,19 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 $arrayColumns[$column->getNome()]['id'] = $column->getId();
                 $arrayColumns[$column->getNome()]['visualizar'] = $column->isVisualizar();
                 $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
+                $arrayColumns[$column->getNome()]['identificador'] = $column->getIdentificador();
                 $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
             }
+
+            $retorno = [];
 
             foreach ($result as $itens) {
 
                 foreach ($itens as $key => $item) {
+
+                    if (empty($item)) {
+                        $item = null;
+                    }
 
                     if (isset($arrayColumns[$key]) && !$arrayColumns[$key]['visualizar']) {
                         unset($itens[$key]);
@@ -448,40 +455,72 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                         continue;
                     }
 
+                    if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['visualizar'])) {
+                        $retorno[$key] = [
+                            'valor' => !empty($item) ? $item : null,
+                            'coluna' => $key,
+                            'tabela' => null,
+                            'label' => null,
+                            'nome' => $arrayColumns[$key]['identificador'] ?: $arrayColumns[$key]['nome'],
+                        ];
+                    }
+
                     if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
+
+                        if (!$arrayColumns[$key]['visualizar']) {
+                            continue;
+                        }
 
                         $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
                         $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
 
-                        $itens[$key] = ['valor' => $item];
-                        $itens[$key]['coluna'] = $key;
-                        $itens[$key]['tabela'] = $arrayColumns[$key]['tabelaNome'];
-                        $itens[$key]['label'] = null;
-                        $itens[$key]['nome'] = $arrayColumns[$key]['nome'];
+                        $retorno[$key] = [
+                            'valor' => !empty($item) ? $item : null,
+                            'coluna' => $key,
+                            'tabela' => $arrayColumns[$key]['tabelaNome'],
+                            'label' => $item,
+                            'nome' => $arrayColumns[$key]['identificador'] ?: $arrayColumns[$key]['nome'],
+                        ];
 
                         foreach ($columnsB as $cs) {
 
                             if ($cs->getLabel()) {
+
+                                if (!$item) {
+                                    continue;
+                                }
+
                                 $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$key} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
-                                $itens[$key]['label'] = $strColumn;
+                                $retorno[$key]['label'] = $strColumn;
                             }
 
                             if ($cs->getIdentificador() && $cs->getNome() == $arrayColumns[$key]['nome']) {
-                                $itens[$key]['nome'] = $cs->getIdentificador();
+                                $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
                             }
 
                         }
                     }
                 }
-                $arrayResult[] = $itens;
-
+                $arrayResult[] = $retorno;
             }
 
-            $colunas = array_keys(current($arrayResult));
+            echo '<pre>';
+
+            //var_dump($arrayResult);
+
+            foreach ($arrayResult as $cols) {
+                foreach ($cols as $key => $col) {
+                    $colunas[] = isset($col['nome']) ? $col['nome'] : $key;
+                }
+                break;
+            }
+
             $colunas = array_map(function ($coluna) {
                 return ucwords(str_replace('_', ' ', $coluna));
             }, $colunas);
+
+            echo '</pre>';
         }
     }
 

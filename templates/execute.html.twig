@@ -12,7 +12,9 @@
                 {% if log|length > 0 %}
                     <div class="alert alert-danger">
                         <p class="lead">{{ log }}</p>
-                        <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
+                        {% if query is not empty %}
+                            <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
+                        {% endif %}
                     </div>
                 {% endif %}
 
@@ -100,8 +102,9 @@
                         <tr>
                             {% for item in itens %}
                                 {% if item is iterable %}
-                                    <td><a href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
-                                            {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a></td>
+                                    <td>{% if item.tabela is not empty %}<a href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
+                                            {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a>
+                                    {% else %}{{ item.valor }}{% endif %}</td>
                                 {% else %}
                                     <td>{{ item }}</td>
                                 {% endif %}
