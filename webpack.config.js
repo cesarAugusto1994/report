@@ -2,6 +2,7 @@
 module.exports = {
     entry: [
         "./src/Front/query-new",
+        "./src/Front/table",
     ],
     output: {
         filename: "web/assets/build/bundle.js"

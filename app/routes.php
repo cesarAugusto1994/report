@@ -271,7 +271,11 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     $queryString = " SELECT ";
 
-    if (count($select) == count($arrayColumns)) {
+    if (!empty($inner)) {
+
+        $queryString .= " * ";
+
+    } elseif (count($select) == count($arrayColumns)) {
 
         $queryString .= $alias . ".* ";
 

@@ -113,9 +113,11 @@ $(function () {
     });
 
 
-    ReactDOM.render(
-        <Item/>,
-        document.getElementById('content-form')
-    )
+    if (document.getElementById('content-form')) {
+        ReactDOM.render(
+            <Item/>,
+            document.getElementById('content-form')
+        )
+    }
 
 });
