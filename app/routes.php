@@ -486,7 +486,8 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                     'columns' => $colunas,
                     'log' => $log,
                     'query' => $query,
-                    'parametros' => null
+                    'parametros' => null,
+                    'table' => $query->getTabela(),
                 ]);
         }
 
@@ -609,7 +610,8 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'columns' => $colunas,
             'log' => $log,
             'query' => $query,
-            'parametros' => $parametros
+            'parametros' => $parametros,
+            'table' => $query->getTabela(),
         ]);
 
 })->bind('query_execute');
@@ -653,10 +655,114 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
     }
 
     if ($result) {
-        $colunas = array_keys(current($result));
+
+        $arrayColumns = [];
+
+        $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+
+        foreach ($columns as $key => $column) {
+            $arrayColumns[$column->getNome()]['id'] = $column->getId();
+            $arrayColumns[$column->getNome()]['visualizar'] = $column->isVisualizar();
+            $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
+            $arrayColumns[$column->getNome()]['identificador'] = $column->getIdentificador();
+            $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
+        }
+
+        $retorno = [];
+
+        foreach ($result as $itens) {
+
+            foreach ($itens as $key => $item) {
+
+                if (empty($item)) {
+                    $item = null;
+                }
+
+                if (isset($arrayColumns[$key]) && !$arrayColumns[$key]['visualizar']) {
+                    unset($itens[$key]);
+                }
+
+                if (!isset($arrayColumns[$key])) {
+                    continue;
+                }
+
+                if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['visualizar'])) {
+                    $retorno[$key] = [
+                        'valor' => !empty($item) ? $item : null,
+                        'coluna' => $key,
+                        'tabela' => null,
+                        'label' => null,
+                        'nome' => $arrayColumns[$key]['identificador'] ?: $arrayColumns[$key]['nome'],
+                    ];
+                }
+
+                if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
+
+                    if (!$arrayColumns[$key]['visualizar']) {
+                        continue;
+                    }
+
+                    $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
+                    $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
+
+                    $retorno[$key] = [
+                        'valor' => !empty($item) ? $item : null,
+                        'coluna' => $key,
+                        'tabela' => $arrayColumns[$key]['tabelaNome'],
+                        'label' => $item,
+                        'nome' => $arrayColumns[$key]['identificador'] ?: $arrayColumns[$key]['nome'],
+                    ];
+
+                    $nomesColunas = array_map(function ($coluna) {
+                        return $coluna->getNome();
+                    }, $columnsB);
+
+                    $chavePrimaria = array_filter($columnsB, function ($coluna) {
+                        return $coluna->isChavePrimaria();
+                    });
+
+                    $pk = !empty($chavePrimaria) ? current($chavePrimaria)->getNome() : null;
+
+                    foreach ($columnsB as $cs) {
+
+                        if ($cs->getLabel()) {
+
+                            if (!$item) {
+                                continue;
+                            }
+
+                            $field = $key;
+
+                            if (!in_array($key, $nomesColunas)) {
+                                $field = $pk;
+                            }
+
+                            $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
+                            $strColumn = $app['db']->fetchColumn($string);
+                            $retorno[$key]['label'] = $strColumn;
+                        }
+
+                        if ($cs->getIdentificador() && $cs->getNome() == $arrayColumns[$key]['nome']) {
+                            $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
+                        }
+
+                    }
+                }
+            }
+            $arrayResult[] = $retorno;
+        }
+
+        foreach ($arrayResult as $cols) {
+            foreach ($cols as $key => $col) {
+                $colunas[] = isset($col['nome']) ? $col['nome'] : $key;
+            }
+            break;
+        }
+
         $colunas = array_map(function ($coluna) {
             return ucwords(str_replace('_', ' ', $coluna));
         }, $colunas);
+
     }
 
     return $app['twig']->render('execute.html.twig',
@@ -665,7 +771,8 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
             'columns' => $colunas,
             'log' => $log,
             'query' => null,
-            'parametros' => null
+            'parametros' => null,
+            'table' => $table
         ]);
 
 });

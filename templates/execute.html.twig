@@ -8,7 +8,10 @@
             <div class="panel-heading"><b>RUN</b>
                 {% if query is not empty %}
                     <a href="{{ path('tabela', { nome : query.tabela.nome }) }}" class="btn btn-success pull-right">{{ query.tabela.nomeFormatado }}</a>
-                {% endif %}</div>
+                {% elseif table is not empty %}
+                    <a href="{{ path('tabela', { nome : table.nome }) }}" class="btn btn-success pull-right">{{ table.nomeFormatado }}</a>
+                {% endif %}
+            </div>
 
             <div class="panel-body">
 

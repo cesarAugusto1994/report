@@ -3,7 +3,7 @@
 
     <div class="container">
 
-        <div class="panel panel-danger">
+        <div class="panel panel-warning">
 
             <div class="panel-heading">Tabelas</div>
 
@@ -12,7 +12,14 @@
                 <a href="/query/add" class="btn btn-success small">Adicionar Busca</a>
                 <hr class="small"/>
 
-                <table class="table table-bordered table-responsive table-hovered">
+                <table class="table table-bordered table-responsive table-hover"
+                       data-toggle="table" data-striped="true" data-search="true"
+                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
+                       data-single-select="true"
+                       data-maintain-selected="true"
+                       data-show-pagination-switch="true"
+                       data-sortable="true"
+                >
                     <thead>
                     <tr>
                         <th>Nome</th>
@@ -27,7 +34,7 @@
                             <td><a href="/query/edit/{{ query.id }}">{{ query.nome }}</a></td>
                             <td>{{ query.query }}</td>
                             <td>
-                                <a class="btn btn-danger execute" href="/execute/{{ query.id }}">Executar</a>
+                                <a class="btn btn-danger btn-xs execute" href="/execute/{{ query.id }}">Executar</a>
                             </td>
                         </tr>
                     {% endfor %}
