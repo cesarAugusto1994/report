@@ -75,6 +75,12 @@ class Colunas
     private $identificador;
 
     /**
+     * @ORM\Column(name="formato", type="string")
+     * @var string
+     */
+    private $formato;
+
+    /**
      * @ORM\Column(name="visualizar", type="boolean")
      * @var boolean
      */
@@ -174,6 +180,22 @@ class Colunas
     public function isVisualizar()
     {
         return $this->visualizar;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormato()
+    {
+        return $this->formato;
+    }
+
+    /**
+     * @param string $formato
+     */
+    public function setFormato($formato)
+    {
+        $this->formato = $formato;
     }
 
     /**
