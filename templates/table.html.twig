@@ -113,7 +113,7 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-primary">Criar Query</button>
+                    <button class="btn btn-success btn-sm">Criar Query</button>
                 </form>
             </div>
         </div>
@@ -127,9 +127,9 @@
                         <tr>
                             <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a>
                                 <button data-redirect="/tabela/{{ query.tabela.nome }}" data-url-remove-query="/query/{{ query.id }}/remove"
-                                        class="btn btn-danger pull-right remove-query">Deletar
+                                        class="btn btn-danger pull-right btn-sm remove-query">Deletar
                                 </button>
-                                <a href="{{ path('query_edit', { id : query.id }) }}" class="btn pull-right">Editar Query</a>
+                                <a href="{{ path('query_edit', { id : query.id }) }}" class="btn pull-right btn-sm">Editar Query</a>
                             </th>
                         </tr>
                     {% else %}
@@ -215,9 +215,11 @@
                                     </button>
                                 {% endif %}</td>
 
-                            <td><input type="checkbox" data-coluna="{{ column.id }}" class="form-control btnSetShow"
-                                       value="{{ column.visualizar }}"
-                                       {% if column.visualizar is not empty %}checked{% endif %}/></td>
+                            <td>
+                                <input type="checkbox" data-coluna="{{ column.id }}" class="btnSetShow"
+                                   value="{{ column.visualizar }}"
+                                   {% if column.visualizar is not empty %}checked{% endif %}/>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

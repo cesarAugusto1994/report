@@ -3,13 +3,13 @@
 
     <div class="container">
 
-        <div class="panel panel-warning">
+        <div class="panel panel-default">
 
             <div class="panel-heading">Tabelas</div>
 
             <div class="panel-body">
 
-                <a href="/query/add" class="btn btn-success small">Adicionar Busca</a>
+                <a href="/query/add" class="btn btn-success btn-sm">Adicionar Busca</a>
                 <hr class="small"/>
 
                 <table class="table table-bordered table-responsive table-hover"
@@ -23,7 +23,6 @@
                     <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Query</th>
                         <th>RUN</th>
                     </tr>
                     </thead>
@@ -32,7 +31,6 @@
                     {% for query in queries %}
                         <tr>
                             <td><a href="/query/edit/{{ query.id }}">{{ query.nome }}</a></td>
-                            <td>{{ query.query }}</td>
                             <td>
                                 <a class="btn btn-danger btn-xs execute" href="/execute/{{ query.id }}">Executar</a>
                             </td>

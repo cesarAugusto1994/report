@@ -450,7 +450,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $item = strstr($item, ':');
             $key = strrpos($item, ':');
             $item = substr($item, 1, $key - 1);
-            $parametros[] = $item;
+            $parametros[$item] = $item;
         }
 
     }
@@ -487,6 +487,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                     'log' => $log,
                     'query' => $query,
                     'parametros' => null,
+                    'params' => $pR,
                     'table' => $query->getTabela(),
                 ]);
         }
@@ -611,6 +612,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'log' => $log,
             'query' => $query,
             'parametros' => $parametros,
+            'params' => $pR,
             'table' => $query->getTabela(),
         ]);
 
