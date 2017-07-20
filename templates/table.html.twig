@@ -216,7 +216,20 @@
                                     </button>
                                 {% endif %}</td>
 
-                            <td>{{ column.formato }}</td>
+                            <td class="buttonsi">{% if column.formato is not empty %}{{ column.formato.nome }}{% endif %}
+                                {% if column.formato is not empty %}
+                                    <button data-coluna="{{ column.id }}" class="btn
+                                btn-primary btn-xs btnAddFormato">
+                                        Editar
+                                    </button>
+                                {% else %}
+                                    <button data-coluna="{{ column.id }}" class="btn
+                                btn-success btn-xs btnAddFormato">
+                                        Adicionar
+                                    </button>
+                                {% endif %}
+
+                            </td>
                             <td>
                                 <input type="checkbox" data-coluna="{{ column.id }}" class="btnSetShow"
                                    value="{{ column.visualizar }}"
@@ -403,6 +416,52 @@
                 });
 
 
+            });
+
+            $(".remove-query").click(function (e) {
+
+                e.preventDefault();
+
+                var url = $(this).data('url-remove-query');
+                var redirect = $(this).data('redirect');
+
+                swal({
+                    title: 'Atenção',
+                    text: "Deseja mesmo deletar esta query?",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Cancelar'
+                }).then(function () {
+
+                    jQuery.post({
+                        type: "POST",
+                        url: url,
+                    }).done(function () {
+
+                        swal(
+                            'Sucesso!',
+                            'A query foi deletada!',
+                            'success'
+                        ).then(
+                            function () {
+                                parent.window.location.href = redirect;
+                            })
+
+                    })
+                        .fail(function () {
+                            swal(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                        })
+                })
+
+
+
             })
 
             $('.btnAddIdentificado').click(function () {
@@ -456,53 +515,61 @@
 
             })
 
-        });
+            $('.btnAddFormato').click(function () {
 
-        $(".remove-query").click(function (e) {
+                var _this = $(this);
 
-            e.preventDefault();
-
-            var url = $(this).data('url-remove-query');
-            var redirect = $(this).data('redirect');
-
-            swal({
-                title: 'Atenção',
-                text: "Deseja mesmo deletar esta query?",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sim',
-                cancelButtonText: 'Cancelar'
-            }).then(function () {
-
-                jQuery.post({
-                    type: "POST",
-                    url: url,
-                }).done(function () {
-
-                    swal(
-                        'Sucesso!',
-                        'A query foi deletada!',
-                        'success'
-                    ).then(
-                        function () {
-                            parent.window.location.href = redirect;
+                $.get('/api/formatos', function (data) {
+                    swal({
+                    title: 'Formato',
+                    input: 'select',
+                    inputOptions: data,
+                    inputPlaceholder: 'Selecione um Formato',
+                    showCancelButton: true,
+                    inputValidator: function (value) {
+                        _this.val(value);
+                        return new Promise(function (resolve, reject) {
+                            if (value !== '') {
+                                resolve()
+                            } else {
+                                reject('Selecione uma tabela válida')
+                            }
                         })
+                    }
+                }).then(function (result) {
 
-                })
-                    .fail(function () {
+                    $.post({
+                        type: "POST",
+                        url: '/api/adicionar-formato-coluna',
+                        data: {
+                            formato: _this.val(),
+                            coluna: _this.data('coluna')
+                        }
+                    }).done(function (data) {
+
                         swal(
-                            'Deleted!',
-                            'Your file has been deleted.',
+                            'Sucesso!',
+                            data.mensagem,
                             'success'
-                        )
+                        ).then(
+                            function () {
+                                window.location.reload();
+                            })
+
                     })
+                        .fail(function (data) {
+                            swal(
+                                'Error!',
+                                data.mensagem,
+                                'error'
+                            )
+                        });
+                })
+                });
+
             })
 
-
-
-        })
+        });
 
     </script>
 

@@ -4,44 +4,62 @@
     <div class="container">
 
         <div class="panel panel-default">
-            <div class="panel-heading">Tabelas</div>
+            <div class="panel-heading">Relat&oacute;rios</div>
 
             <div class="panel-body">
 
-                <table class="table table-bordered table-responsive table-hover"
-                       data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
-                       data-single-select="true"
-                       data-maintain-selected="true"
-                       data-show-pagination-switch="true"
-                       data-sortable="true"
-                >
-                    <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Ativo</th>
-                    </tr>
-                    </thead>
+                <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#relatorios">Criar Relat&oacute;rio</button>
 
+                <br/>
+                <br/>
+
+                <table class="table table-bordered table-responsive table-hovered">
                     <tbody>
-                    {% for table in tables %}
+                    {% for relatorio in relatorios %}
                         <tr>
-                            <td><a href="/tabela/{{ table.nome }}">{{ table.nomeFormatado }}</a></td>
-                            <td><input type="checkbox" {% if table.ativo %}checked{% endif %} class="form-control"/></td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="2">Nenhuma Tabela Configurada</td>
+                            <th>
+                                <a href="{{ path('relatorio', { nome : relatorio.nome }) }}">{{ relatorio.nome }}</a>
+                            </th>
                         </tr>
                     {% endfor %}
                     </tbody>
-
                 </table>
+
 
             </div>
 
         </div>
 
+    </div>
+
+    <div class="modal fade" id="relatorios" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Criar Relat&oacute;rio</h4>
+                </div>
+                <form class="form-horizontal" action="{{ path('relatorio_criar') }}" method="post">
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="nome_relatorio">Nome:</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nome_relatorio" id="nome_relatorio" required
+                                       class="form-control" autofocus/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

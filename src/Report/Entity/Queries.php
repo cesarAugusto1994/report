@@ -42,7 +42,7 @@ class Queries
     private $queryString;
 
     /**
-     * @var \Tabelas
+     * @var Tabelas
      *
      * @ORM\ManyToOne(targetEntity="Tabelas")
      * @ORM\JoinColumns({
@@ -50,6 +50,16 @@ class Queries
      * })
      */
     private $tabela;
+
+    /**
+     * @var Relatorios
+     *
+     * @ORM\ManyToOne(targetEntity="Relatorios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="relatorio_id", referencedColumnName="id")
+     * })
+     */
+    private $relatorio;
 
     /**
      * @return int
@@ -76,7 +86,7 @@ class Queries
     }
 
     /**
-     * @return \Tabelas
+     * @return Tabelas
      */
     public function getTabela()
     {
@@ -100,7 +110,7 @@ class Queries
     }
 
     /**
-     * @param \Tabelas $tabela
+     * @param Tabelas $tabela
      */
     public function setTabela($tabela)
     {
@@ -121,6 +131,22 @@ class Queries
     public function setQueryString($queryString)
     {
         $this->queryString = $queryString;
+    }
+
+    /**
+     * @return Relatorios
+     */
+    public function getRelatorio()
+    {
+        return $this->relatorio;
+    }
+
+    /**
+     * @param Relatorios $relatorio
+     */
+    public function setRelatorio($relatorio)
+    {
+        $this->relatorio = $relatorio;
     }
 }
 

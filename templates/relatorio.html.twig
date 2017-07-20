@@ -1,0 +1,39 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Relat&oacute;rio</div>
+
+            <div class="panel-body">
+                <h3>{{ relatorio.nome }}</h3>
+            </div>
+
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Queries</div>
+            <div class="panel-body">
+                <table class="table table-bordered table-responsive table-hovered">
+                    <tbody>
+                    {% for query in relatorio.queries %}
+                        <tr>
+                            <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a>
+                                <button data-redirect="/tabela/{{ query.tabela.nome }}" data-url-remove-query="/query/{{ query.id }}/remove"
+                                        class="btn btn-danger pull-right btn-sm remove-query">Deletar
+                                </button>
+                                <a href="{{ path('query_edit', { id : query.id }) }}" class="btn pull-right btn-sm">Editar Query</a>
+                            </th>
+                        </tr>
+                    {% else %}
+                        <tr><td>Nenhuma Query vinculada com esta tabela</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -43,7 +43,7 @@ class Colunas
     private $chavePrimaria = '0';
 
     /**
-     * @var \Tabelas
+     * @var Tabelas
      *
      * @ORM\ManyToOne(targetEntity="Tabelas")
      * @ORM\JoinColumns({
@@ -53,7 +53,7 @@ class Colunas
     private $tabela;
 
     /**
-     * @var \Tabelas
+     * @var Tabelas
      *
      * @ORM\ManyToOne(targetEntity="Tabelas")
      * @ORM\JoinColumns({
@@ -75,8 +75,12 @@ class Colunas
     private $identificador;
 
     /**
-     * @ORM\Column(name="formato", type="string")
-     * @var string
+     * @var Formatos
+     *
+     * @ORM\ManyToOne(targetEntity="Formatos")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="formato", referencedColumnName="id")
+     * })
      */
     private $formato;
 
@@ -119,7 +123,7 @@ class Colunas
     }
 
     /**
-     * @return \Tabelas
+     * @return Tabelas
      */
     public function getTabela()
     {
@@ -127,7 +131,7 @@ class Colunas
     }
 
     /**
-     * @return \Tabelas
+     * @return Tabelas
      */
     public function getTabelaRef()
     {
@@ -135,7 +139,7 @@ class Colunas
     }
 
     /**
-     * @param \Tabelas $tabelaRef
+     * @param Tabelas $tabelaRef
      */
     public function setTabelaRef($tabelaRef)
     {
@@ -183,7 +187,7 @@ class Colunas
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getFormato()
     {
@@ -191,7 +195,7 @@ class Colunas
     }
 
     /**
-     * @param string $formato
+     * @param mixed $formato
      */
     public function setFormato($formato)
     {

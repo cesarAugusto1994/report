@@ -12,189 +12,24 @@ use Report\Entity\Queries;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+$app->mount('/api', require __DIR__ . '/routes/api.php');
+$app->mount('/relatorio', require __DIR__ . '/routes/relatorio.php');
+
 $app->get('/', function () use ($app) {
 
+    $relatorios = $app['relatorios.repository']->findAll();
+
+    return $app['twig']->render('index.html.twig', ['relatorios' => $relatorios]);
+
+})->bind('home');
+
+$app->get('/tables', function () use ($app) {
+
     $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
 
-    return $app['twig']->render('index.html.twig', ['tables' => $tables]);
+    return $app['twig']->render('tabelas.html.twig', ['tables' => $tables]);
 
-});
-
-$app->get('/api/tabelas', function () use ($app) {
-
-    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
-
-    $retorno = [];
-
-    foreach ($tables as $table) {
-        $retorno[$table->getId()] = $table->getNomeFormatado();
-    }
-
-    return new JsonResponse($retorno);
-});
-
-$app->get('/api/tabela/{id}/colunas', function ($id) use ($app) {
-
-    $table = $app['tables.repository']->find($id);
-    $columns = $app['columns.repository']->findBy(['tabela' => $table]);
-
-    $retorno = [];
-
-    foreach ($columns as $column) {
-        $retorno[] = [
-            'id' => $column->getId(),
-            'nome' => $column->getNomeFormatado(),
-        ];
-    }
-
-    return new JsonResponse($retorno);
-});
-
-$app->post('/api/remover-vinculo-coluna-tabela', function (Request $request) use ($app) {
-
-    $coluna = $request->request->get('coluna');
-
-    try {
-        /**
-         * @var Colunas $column
-         */
-        $column = $app['columns.repository']->find($coluna);
-
-        $column->setTabelaRef(null);
-
-        $app['columns.repository']->save($column);
-
-        return $app->json([
-            'classe' => 'sucesso',
-            'mensagem' => 'Tabela Desvinculada com Sucesso.'
-        ], JsonResponse::HTTP_CREATED);
-
-    } catch (Exception $e) {
-
-        return $app->json([
-            'classe' => 'erro',
-            'mensagem' => $e->getMessage()
-        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
-
-    }
-});
-
-
-$app->post('/api/vincular-coluna-tabela', function (Request $request) use ($app) {
-
-    $tabela = $request->request->get('tabela');
-    $coluna = $request->request->get('coluna');
-
-    try {
-
-        $table = $app['tables.repository']->find($tabela);
-
-        /**
-         * @var Colunas $column
-         */
-        $column = $app['columns.repository']->find($coluna);
-
-        $column->setTabelaRef($table);
-
-        $app['columns.repository']->save($column);
-
-        return $app->json([
-            'classe' => 'sucesso',
-            'mensagem' => 'Tabela Vinculada com Sucesso.'
-        ], JsonResponse::HTTP_CREATED);
-
-    } catch (Exception $e) {
-
-        return $app->json([
-            'classe' => 'erro',
-            'mensagem' => $e->getMessage()
-        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
-
-    }
-
-});
-
-$app->post('/api/adicionar-identificador-coluna', function (Request $request) use ($app) {
-
-    $coluna = $request->request->get('coluna');
-    $identificador = $request->request->get('identificador');
-
-    try {
-        /**
-         * @var Colunas $column
-         */
-        $column = $app['columns.repository']->find($coluna);
-        $column->setIdentificador($identificador);
-        $app['columns.repository']->save($column);
-
-        return $app->json([
-            'classe' => 'sucesso',
-            'mensagem' => 'Identificador Adicionado com Sucesso.'
-        ], JsonResponse::HTTP_CREATED);
-
-    } catch (Exception $e) {
-
-        return $app->json([
-            'classe' => 'erro',
-            'mensagem' => $e->getMessage()
-        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
-
-    }
-});
-
-$app->post('/api/tratar-mostrar-coluna', function (Request $request) use ($app) {
-
-    $coluna = $request->request->get('coluna');
-
-    try {
-        /**
-         * @var Colunas $column
-         */
-        $column = $app['columns.repository']->find($coluna);
-        $column->setVisualizar(!$column->isVisualizar());
-        $app['columns.repository']->save($column);
-
-        return $app->json([
-            'classe' => 'sucesso',
-            'mensagem' => 'Coluna Tratada com Sucesso.'
-        ], JsonResponse::HTTP_CREATED);
-
-    } catch (Exception $e) {
-
-        return $app->json([
-            'classe' => 'erro',
-            'mensagem' => $e->getMessage()
-        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
-
-    }
-});
-
-$app->post('/api/adicionar-label', function (Request $request) use ($app) {
-
-    $coluna = $request->request->get('coluna');
-
-    try {
-        /**
-         * @var Colunas $column
-         */
-        $column = $app['columns.repository']->find($coluna);
-        $column->setLabel(!$column->getLabel());
-        $app['columns.repository']->save($column);
-
-        return $app->json([
-            'classe' => 'sucesso',
-            'mensagem' => 'Label Tratada com Sucesso.'
-        ], JsonResponse::HTTP_CREATED);
-
-    } catch (Exception $e) {
-
-        return $app->json([
-            'classe' => 'erro',
-            'mensagem' => $e->getMessage()
-        ], JsonResponse::HTTP_NOT_ACCEPTABLE);
-
-    }
-});
+})->bind('tabelas');
 
 $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
@@ -229,7 +64,7 @@ $app->get('/queries', function () use ($app) {
 
     return $app['twig']->render('queries.html.twig', ['queries' => $queries]);
 
-});
+})->bind('queries');
 
 $app->get('/query/add', function () use ($app) {
 
@@ -242,9 +77,10 @@ $app->get('/query/add', function () use ($app) {
 $app->get('/query/edit/{id}', function ($id) use ($app) {
 
     $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+    $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);
     $query = $app['queries.repository']->find($id);
 
-    return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query]);
+    return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
 
 })->bind('query_edit');
 
@@ -398,13 +234,16 @@ $app->post('/query/edit/save', function (Request $request) use ($app) {
     $id = $request->request->get('id');
     $nome = $request->request->get('nome');
     $tabela = $request->request->get('tabela');
+    $relatorio = $request->request->get('relatorio');
     $queryString = $request->request->get('query');
 
     $tabela = $app['tables.repository']->find($tabela);
-
     $query = $app['queries.repository']->find($id);
+    $relatorio = $app['relatorios.repository']->find($relatorio);
+
     $query->setNome($nome);
     $query->setTabela($tabela);
+    $query->setRelatorio($relatorio);
     $query->setQuery($queryString);
 
     $app['queries.repository']->save($query);
@@ -504,6 +343,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 $arrayColumns[$column->getNome()]['visualizar'] = $column->isVisualizar();
                 $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
                 $arrayColumns[$column->getNome()]['identificador'] = $column->getIdentificador();
+                $arrayColumns[$column->getNome()]['formato'] = $column->getFormato() ? $column->getFormato()->getNome() : null;
                 $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
             }
 
@@ -523,6 +363,40 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                     if (!isset($arrayColumns[$key])) {
                         continue;
+                    }
+
+                    if (!empty($arrayColumns[$key]['formato'])) {
+
+                        switch ($arrayColumns[$key]['formato']) {
+                            case 'Data' :
+
+                                if (empty($item)) {
+                                    break;
+                                }
+
+                                $data = DateTime::createFromFormat('Ymd', $item);
+
+                                if (!$data instanceof DateTime) {
+                                    break;
+                                }
+
+                                $item = $data->format('d/m/Y');
+                                break;
+                            case 'Data e Hora' :
+
+                                if (empty($item)) {
+                                    break;
+                                }
+
+                                $data = DateTime::createFromFormat('Y-m-d H:i:s', $item);
+                                $item = $data->format('d/m/Y H:i:s');
+                                break;
+
+                            case 'Boolean' :
+                                $item = $item ? 'Sim' : 'Nao';
+                                break;
+                        }
+
                     }
 
                     if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['visualizar'])) {
