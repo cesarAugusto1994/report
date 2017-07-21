@@ -42,7 +42,21 @@ class ParametrosHelper
 
             if ($parametro->getColuna()->getTabelaRef()) {
 
-                $query = "SELECT * FROM {$tabela->getNome()} ORDER BY {$parametro->getNome()} ASC ";
+                $existeColuna = $app['columns.repository']->findBy(['tabela' => $tabela->getNome(), 'nome' => $parametro->getNome()]);
+
+                $col = $parametro->getNome();
+
+                if (!$existeColuna) {
+                    $columnsB = $app['columns.repository']->findBy(['tabela' => $tabela->getNome()]);
+                    $colLabel = array_map(function ($coluna) {
+                        return $coluna->isChavePrimaria();
+                    }, $columnsB);
+                    if ($colLabel) {
+                        $col = $colLabel[0]->getNome();
+                    }
+                }
+
+                $query = "SELECT * FROM {$tabela->getNome()} ORDER BY {$col} ASC ";
                 $itens = $app['db']->fetchAll($query);
 
                 $select = '<div class="form-group">

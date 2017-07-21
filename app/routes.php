@@ -540,6 +540,12 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                     $field = $pk;
                                 }
 
+                                $colunaExiste = $app['columns.repository']->findOneBy(['nome' => $field]);
+
+                                if (!$colunaExiste) {
+                                    $colenaExiste = 0;
+                                }
+
                                 $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
