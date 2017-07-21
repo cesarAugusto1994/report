@@ -8,7 +8,9 @@
 
 use Doctrine\ORM\EntityManager;
 use Report\Entity\Colunas;
+use Report\Entity\Parametros;
 use Report\Entity\Queries;
+use Report\Helpers\ParametrosHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -80,7 +82,8 @@ $app->get('/query/edit/{id}', function ($id) use ($app) {
     $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);
     $query = $app['queries.repository']->find($id);
 
-    return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
+    return $app['twig']->render('query-edit.html.twig',
+        ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
 
 })->bind('query_edit');
 
@@ -145,10 +148,16 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
         foreach ($where as $key => $item) {
 
+            $valor = $arrayColumns[$item];
+
+            if (is_array($valor)) {
+                $valor = implode(',', $arrayColumns[$item]);
+            }
+
             if (0 == $key) {
-                $queryString .= $alias . '.' . $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
+                $queryString .= $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
             } else {
-                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " = :{$arrayColumns[$item]}: " . PHP_EOL;
+                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
             }
         }
 
@@ -190,6 +199,48 @@ $app->post('/query/create', function (Request $request) use ($app) {
     $query->setQueryString(false);
 
     $app['queries.repository']->save($query);
+
+    if (!empty($where)) {
+
+        foreach ($where as $key => $item) {
+
+            $tipo = 'texto';
+
+            $parametro = new Parametros();
+            $parametro->setNome($arrayColumns[$item]);
+
+            $cols = array_map(function ($col) {
+                return $col->toArray();
+            }, $columns);
+
+            if ($cols) {
+                $array = array_filter($cols, function ($col) use ($arrayColumns, $item) {
+                    return $col['nome'] == $arrayColumns[$item];
+                });
+
+                if ($array) {
+                    $array = current($array);
+                }
+
+                $col = $app['columns.repository']->find($array['id']);
+                $parametro->setColuna($col);
+
+                if (!empty($array['tabela'])) {
+                    $tipo = 'Entidade';
+
+                    $parametro->setQueryString("SELECT * FROM {$array['tabela']}");
+                } elseif (!empty($array['formato'])) {
+                    $tipo = $array['formato'];
+                }
+            }
+
+            $parametro->setTipo($tipo);
+            $parametro->setQuery($query);
+
+            $app['parametros.repository']->save($parametro);
+        }
+
+    }
 
     return $app->redirect('/execute/' . $query->getId());
 
@@ -276,12 +327,16 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     $string = $query->getQuery();
 
-    $parametros = [];
+    $parametros = $dados = [];
 
     $slug = strstr($string, ':');
     $key = strrpos($slug, ':');
     $resultado = substr($slug, 0, $key + 1);
     $itens = explode(',', str_replace(' ', ',', $resultado));
+
+    $parametrosQuery = $app['parametros.repository']->findBy(['query' => $query]);
+    $parametrosR = new ParametrosHelper($parametrosQuery, $request);
+    $parametrosR = $parametrosR->render($app);
 
     foreach ($itens as $item) {
 
@@ -289,19 +344,39 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $item = strstr($item, ':');
             $key = strrpos($item, ':');
             $item = substr($item, 1, $key - 1);
-            $parametros[$item] = $item;
+
+            $parametros[$item]['tipo'] = 'text';
+
+            if (strpos($item, 'Tabela-Status-Entregas') !== false) {
+
+                $q = "SELECT * FROM webpdv.status_entregas";
+                $dados = $app['db']->fetchAll($q);
+
+                $parametros[$item]['tipo'] = 'classe';
+            }
+
+            if (strpos($item, 'Data') !== false) {
+                $parametros[$item]['tipo'] = 'date';
+            }
+
+            $parametros[$item]['valor'] = $item;
         }
 
     }
 
     if (!empty($pR) && false != $pR) {
         foreach ($pR as $key => $item) {
+
+            if (is_array($item)) {
+                $item = implode(',', $item);
+            }
+
             $string = str_replace(':' . $key . ':', $item, $string);
         }
     }
 
     $log = $result = $colunas = [];
-    $arrayResult = [];
+    $arrayResult = $colunas = [];
 
     if ($parametros && !empty($request->query->all()) || empty($parametros)) {
 
@@ -313,11 +388,15 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
         if ($query->isQueryString()) {
 
-            $colunas = array_keys(current($result));
+            if ($result) {
 
-            $colunas = array_map(function ($coluna) {
-                return ucwords(str_replace('_', ' ', $coluna));
-            }, $colunas);
+                $colunas = array_keys(current($result));
+
+                $colunas = array_map(function ($coluna) {
+                    return ucwords(str_replace('_', ' ', $coluna));
+                }, $colunas);
+
+            }
 
             return $app['twig']->render('execute.html.twig',
                 [
@@ -368,6 +447,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                     if (!empty($arrayColumns[$key]['formato'])) {
 
                         switch ($arrayColumns[$key]['formato']) {
+
                             case 'Data' :
 
                                 if (empty($item)) {
@@ -382,6 +462,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                                 $item = $data->format('d/m/Y');
                                 break;
+
                             case 'Data e Hora' :
 
                                 if (empty($item)) {
@@ -389,11 +470,20 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                 }
 
                                 $data = DateTime::createFromFormat('Y-m-d H:i:s', $item);
+
+                                if (!$data instanceof DateTime) {
+                                    break;
+                                }
+
                                 $item = $data->format('d/m/Y H:i:s');
                                 break;
 
                             case 'Boolean' :
                                 $item = $item ? 'Sim' : 'Nao';
+                                break;
+
+                            case 'Moeda' :
+                                $item = number_format($item, 2);
                                 break;
                         }
 
@@ -438,7 +528,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                         foreach ($columnsB as $cs) {
 
-                            if ($cs->getLabel()) {
+                            if ($cs->isLabel()) {
 
                                 if (!$item) {
                                     continue;
@@ -485,7 +575,9 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'columns' => $colunas,
             'log' => $log,
             'query' => $query,
+            'dados' => $dados,
             'parametros' => $parametros,
+            'parametrosR' => $parametrosR,
             'params' => $pR,
             'table' => $query->getTabela(),
         ]);

@@ -46,7 +46,7 @@
                                     data-live-search="true" data-width="100%"
                                     name="select[]">
                                 {% for column in columns %}
-                                    <option selected="selected" value="{{ column.id }}">{{ column.nome }}</option>
+                                    <option selected="selected" value="{{ column.id }}">{{ column.nomeFormatado }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -72,7 +72,7 @@
                                     data-width="100%"
                                     data-live-search="true" name="where[]">
                                 {% for column in columns %}
-                                    <option value="{{ column.id }}">{{ column.nome }}</option>
+                                    <option value="{{ column.id }}">{{ column.nomeFormatado }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -84,7 +84,7 @@
                                     data-width="100%"
                                     data-live-search="true" name="groupBy[]">
                                 {% for column in columns %}
-                                    <option value="{{ column.id }}">{{ column.nome }}</option>
+                                    <option value="{{ column.id }}">{{ column.nomeFormatado }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -96,7 +96,7 @@
                                     data-width="100%"
                                     data-live-search="true" name="orderBy[]">
                                 {% for column in columns %}
-                                    <option value="{{ column.id }}">{{ column.nome }}</option>
+                                    <option value="{{ column.id }}">{{ column.nomeFormatado }}</option>
                                 {% endfor %}
                             </select>
                         </div>

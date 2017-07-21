@@ -147,19 +147,19 @@ class Colunas
     }
 
     /**
+     * @return bool
+     */
+    public function isLabel()
+    {
+        return $this->label;
+    }
+
+    /**
      * @param bool $label
      */
     public function setLabel($label)
     {
         $this->label = $label;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLabel()
-    {
-        return $this->label;
     }
 
     /**
@@ -220,6 +220,20 @@ class Colunas
         }
 
         return ucwords(str_replace('_', ' ', $this->nome));
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'nome' => $this->nome,
+            'tipo' => $this->tipo,
+            'formato' => $this->formato ? $this->formato->getNome() : null,
+            'tabela' => $this->tabelaRef ? $this->tabelaRef->getNome() : null
+        ];
     }
 
 }

@@ -185,7 +185,7 @@ $api->post('/adicionar-label', function (Request $request) use ($app) {
          * @var Colunas $column
          */
         $column = $app['columns.repository']->find($coluna);
-        $column->setLabel(!$column->getLabel());
+        $column->setLabel(!$column->isLabel());
         $app['columns.repository']->save($column);
 
         return $app->json([
