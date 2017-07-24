@@ -552,12 +552,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                     $field = $pk;
                                 }
 
-                                $colunaExiste = $app['columns.repository']->findOneBy(['nome' => $field]);
-
-                                if (!$colunaExiste) {
-                                    $colenaExiste = 0;
-                                }
-
                                 $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
@@ -625,13 +619,23 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
     $key = !empty($column) ? $column->getNome() : null;
 
     if (!$column) {
-        $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'label' => true]);
+        $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'chavePrimaria' => true]);
         if ($col) {
             $key = $col->getNome();
         }
     }
 
-    $string = " SELECT * FROM {$tabela} WHERE {$key} = {$valor} ";
+    $tableColumns = $app['columns.repository']->findBy(['tabela' => $table, 'visualizar' => true]);
+
+    $strColumns = "";
+
+    foreach ($tableColumns as $tableColumn) {
+        $strColumns .= $tableColumn->getNome().", ";
+    }
+
+    $strColumns = substr($strColumns, 0, -2);
+
+    $string = "SELECT {$strColumns} FROM {$tabela} WHERE {$key} = {$valor}";
 
     try {
         $result = $app['db']->fetchAll($string);
@@ -639,21 +643,24 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
         $log = $e->getMessage();
     }
 
+    $arrayResult = [];
+
+    $retorno = [];
+
     if ($result) {
 
         $arrayColumns = [];
 
-        $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+        $columns = $app['columns.repository']->findBy(['tabela' => $table, 'visualizar' => true]);
 
         foreach ($columns as $key => $column) {
             $arrayColumns[$column->getNome()]['id'] = $column->getId();
             $arrayColumns[$column->getNome()]['visualizar'] = $column->isVisualizar();
             $arrayColumns[$column->getNome()]['nome'] = $column->getNome();
             $arrayColumns[$column->getNome()]['identificador'] = $column->getIdentificador();
+            $arrayColumns[$column->getNome()]['formato'] = $column->getFormato() ? $column->getFormato()->getNome() : null;
             $arrayColumns[$column->getNome()]['tabelaNome'] = $column->getTabelaRef() ? $column->getTabelaRef()->getNome() : null;
         }
-
-        $retorno = [];
 
         foreach ($result as $itens) {
 
@@ -671,6 +678,51 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
                     continue;
                 }
 
+                if (!empty($arrayColumns[$key]['formato'])) {
+
+                    switch ($arrayColumns[$key]['formato']) {
+
+                        case 'Data' :
+
+                            if (empty($item)) {
+                                break;
+                            }
+
+                            $data = DateTime::createFromFormat('Ymd', $item);
+
+                            if (!$data instanceof DateTime) {
+                                break;
+                            }
+
+                            $item = $data->format('d/m/Y');
+                            break;
+
+                        case 'Data e Hora' :
+
+                            if (empty($item)) {
+                                break;
+                            }
+
+                            $data = DateTime::createFromFormat('Y-m-d H:i:s', $item);
+
+                            if (!$data instanceof DateTime) {
+                                break;
+                            }
+
+                            $item = $data->format('d/m/Y H:i:s');
+                            break;
+
+                        case 'Boolean' :
+                            $item = $item ? 'Sim' : 'Nao';
+                            break;
+
+                        case 'Moeda' :
+                            $item = number_format($item, 2);
+                            break;
+                    }
+
+                }
+
                 if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['visualizar'])) {
                     $retorno[$key] = [
                         'valor' => !empty($item) ? $item : null,
@@ -682,10 +734,6 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
                 }
 
                 if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['tabelaNome'])) {
-
-                    if (!$arrayColumns[$key]['visualizar']) {
-                        continue;
-                    }
 
                     $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
                     $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
@@ -743,7 +791,7 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
                         }
 
                         if ($cs->getIdentificador() && $cs->getNome() == $arrayColumns[$key]['nome']) {
-                            $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
+                           $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
                         }
 
                     }
@@ -767,12 +815,12 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
 
     return $app['twig']->render('execute.html.twig',
         [
-            'result' => $result,
+            'result' => $arrayResult,
             'columns' => $colunas,
             'log' => $log,
             'query' => null,
             'parametros' => null,
-            'table' => $table
+            'table' => $tabela
         ]);
 
 });

@@ -84,7 +84,7 @@
                 {% if query is not empty %}
                     <a href="{{ path('tabela', { nome : query.tabela.nome }) }}" class="btn btn-success btn-xs pull-right">{{ query.tabela.nomeFormatado }}</a>
                 {% elseif table is not empty %}
-                    <a href="{{ path('tabela', { nome : table.nome }) }}" class="btn btn-success btn-xs pull-right">{{ table.nomeFormatado }}</a>
+                    <a href="{{ path('tabela', { nome : table }) }}" class="btn btn-success btn-xs pull-right">{{ table|replace('_', ' ')|capitalize }}</a>
                 {% endif %}
             </div>
 
@@ -134,7 +134,10 @@
                                     <td>{% if item.tabela is not empty %}<a
                                             href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
                                             {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a>
-                                        {% else %}{{ item.valor }}{% endif %}</td>
+                                        {% else %}
+                                            {{ item.valor }}
+                                        {% endif %}
+                                    </td>
                                 {% else %}
                                     <td>{{ item }}</td>
                                 {% endif %}
