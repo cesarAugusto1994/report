@@ -76,7 +76,9 @@
 
         {% endif %}
 
-        <div class="panel panel-default">
+        {% if result is not empty %}
+
+            <div class="panel panel-default">
 
             <div class="panel-heading"><b>RUN</b>
                 {% if query is not empty %}
@@ -145,6 +147,9 @@
 
             </div>
         </div>
+
+        {% endif %}
+
     </div>
 
 {% endblock %}

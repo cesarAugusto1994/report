@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Tabelas
  *
  * @ORM\Table(name="tabelas", schema="relatorio")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Report\Repository\TabelasRepository")
  */
 class Tabelas
 {
@@ -43,6 +43,16 @@ class Tabelas
     private $schema;
 
     /**
+     * @var Relatorios
+     *
+     * @ORM\ManyToOne(targetEntity="Relatorios")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="relatorio_id", referencedColumnName="id")
+     * })
+     */
+    private $relatorio;
+
+    /**
      * @return int
      */
     public function getId()
@@ -72,6 +82,22 @@ class Tabelas
     public function getSchema()
     {
         return $this->schema;
+    }
+
+    /**
+     * @return Relatorios
+     */
+    public function getRelatorio()
+    {
+        return $this->relatorio;
+    }
+
+    /**
+     * @param Relatorios $relatorio
+     */
+    public function setRelatorio($relatorio)
+    {
+        $this->relatorio = $relatorio;
     }
 
     /**

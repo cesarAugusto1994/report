@@ -15,9 +15,14 @@
         <div class="panel panel-default">
             <div class="panel-heading">Queries</div>
             <div class="panel-body">
+
+                <button class="btn btn-link" data-toggle="modal" data-target="#tabelas">Vincular Tabelas</button>
+                <br/>
+                <br/>
+
                 <table class="table table-bordered table-responsive table-hovered">
                     <tbody>
-                    {% for query in relatorio.queries %}
+                    {% for query in queries %}
                         <tr>
                             <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a>
                                 <button data-redirect="/tabela/{{ query.tabela.nome }}" data-url-remove-query="/query/{{ query.id }}/remove"
@@ -34,6 +39,42 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="modal fade" id="tabelas" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Vincular Tabelas</h4>
+                </div>
+                <form class="form-horizontal" action="{{ path('relatorio_vincular_tabelas', { id : relatorio.id }) }}" method="post">
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="nome_relatorio">Nome:</label>
+                            <div class="col-sm-10">
+                                <select required class="selectpicker" multiple data-actions-box="true"
+                                        show-tick="true" title="Nada Selecionado"
+                                        data-live-search="true" data-width="100%"
+                                        name="tabelas[]">
+                                    {% for tabela in tabelas %}
+                                        <option value="{{ tabela.id }}">{{ tabela.nomeFormatado }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
