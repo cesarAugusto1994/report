@@ -144,7 +144,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     if (!empty($where)) {
 
-        $queryString .= " WHERE ";
+        $queryString .= " WHERE 1 = 1 ";
 
         foreach ($where as $key => $item) {
 
@@ -154,8 +154,14 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $valor = implode(',', $arrayColumns[$item]);
             }
 
-            if (0 == $key) {
-                $queryString .= $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
+            $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
+
+            if ($col->getFormato()) {
+                if ($col->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
+                    $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
+                } elseif ($col->getFormato()->getNome() == Colunas::TIPO_DATA) {
+                    $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
+                }
             } else {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
             }
@@ -239,13 +245,8 @@ $app->post('/query/create', function (Request $request) use ($app) {
             $parametro->setTipo($tipo);
             $parametro->setQuery($query);;
 
-            //var_dump($array);
-
             $app['parametros.repository']->save($parametro);
         }
-
-        //exit;
-
     }
 
     return $app->redirect('/execute/' . $query->getId());
@@ -358,14 +359,6 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $item = substr($item, 1, $key - 1);
 
             $parametros[$item]['tipo'] = 'text';
-
-            if (strpos($item, 'Tabela-Status-Entregas') !== false) {
-
-                $q = "SELECT * FROM webpdv.status_entregas";
-                $dados = $app['db']->fetchAll($q);
-
-                $parametros[$item]['tipo'] = 'classe';
-            }
 
             if (strpos($item, 'Data') !== false) {
                 $parametros[$item]['tipo'] = 'date';
@@ -630,7 +623,7 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
     $strColumns = "";
 
     foreach ($tableColumns as $tableColumn) {
-        $strColumns .= $tableColumn->getNome().", ";
+        $strColumns .= $tableColumn->getNome() . ", ";
     }
 
     $strColumns = substr($strColumns, 0, -2);
@@ -791,7 +784,7 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
                         }
 
                         if ($cs->getIdentificador() && $cs->getNome() == $arrayColumns[$key]['nome']) {
-                           $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
+                            $retorno[$key]['nome'] = $arrayColumns[$key]['identificador'];
                         }
 
                     }
@@ -868,7 +861,7 @@ $app->post('tabela/{id}/mesclar-colunas', function ($id, Request $request) use (
     $app['columns.repository']->save($colunaA);
 
     return $app->redirect('/');
-    
+
 })->bind('mesclar_colunas');
 
 return $app;

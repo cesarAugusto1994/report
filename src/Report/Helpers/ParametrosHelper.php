@@ -216,11 +216,18 @@ class ParametrosHelper
                         $retorno[] = $select;
                         break;
                     case 'Data' :
-                    case 'Data e Hora' :
                         $retorno[] = '<div class="form-group">
                                         <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
                                         <div class="col-sm-10">
                                             <input type="text" required class="form-control datepicker" name="' . $parametro->getNome() . '" value="' . $request . '"/>
+                                        </div>
+                                      </div>';
+                        break;
+                    case 'Data e Hora' :
+                        $retorno[] = '<div class="form-group">
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" required class="form-control datepicker2" name="' . $parametro->getNome() . '" value="' . $request . '"/>
                                         </div>
                                       </div>';
                         break;

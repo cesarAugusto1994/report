@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Colunas
 {
     const TIPO_MESCLADO = 'MESCLADO';
+    const TIPO_DATA = 'Data';
+    const TIPO_DATA_HORA = 'Data e Hora';
 
     /**
      * @var integer

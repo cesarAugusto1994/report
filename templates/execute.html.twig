@@ -19,39 +19,12 @@
                 <div class="panel-heading">Formulário</div>
 
                 <div class="panel-body">
-                    {#
-                                                <div class="alert alert-warning">
-                                                    <p>Esta Query possui Parametros</p>
-                                                </div>
-                    #}
+
                     <form class="form-horizontal">
 
                         {% for keyp, parametro in parametros %}
 
                             <input type="hidden" id="{{ keyp }}-i">
-
-                            {#
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2">{{ keyp }}:</label>
-                                    <div class="col-sm-10">
-
-                                        {% if parametro.tipo == 'classe' %}
-
-                                            <select class="selectpicker" title="Nada Selecionado"
-                                                    data-width="100%" name="{{ keyp }}"
-                                                    data-live-search="true">
-                                                {% for dado in dados %}
-                                                    <option value="{{ dado.id_status_entrega }}">{{ dado.nome_status_entrega }}</option>
-                                                {% endfor %}
-                                            </select>
-
-                                        {% else %}
-                                        <input type="text" class="form-control parametro {% if parametro.tipo == 'date' %}datepicker2{% endif %}" required
-                                               data-param="{{ parametro.valor }}" value="{% if params is not empty %}{% for key, value in params %}{% if key == keyp %}{{ value }}{% endif %}{% endfor %}{% endif %}" name="{{ keyp }}" id="{{ keyp }}"/>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            #}
 
                         {% endfor %}
 
@@ -59,15 +32,6 @@
                             {{ p|raw }}
                         {% endfor %}
 
-                        {#
-                                                        <div class="form-group">
-                                                            <label class="control-label col-sm-2">Query:</label>
-                                                            <div class="col-sm-10">
-                                                                <pre><textarea class="form-control" id="query-view"
-                                                                               rows="12">{{ query.query }}</textarea></pre>
-                                                            </div>
-                                                        </div>
-                        #}
                         <button class="btn btn-primary btn-sm">Executar</button>
                     </form>
 
@@ -169,6 +133,15 @@
                 todayHighlight : true,
 
                 format: 'yyyymmdd'
+
+            });
+
+            $('.datepicker2').datepicker({
+
+                todayBtn : true,
+                todayHighlight : true,
+
+                format: 'yyyy-mm-dd'
 
             });
 
