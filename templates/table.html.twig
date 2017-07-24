@@ -46,7 +46,8 @@
                                     data-live-search="true" data-width="100%"
                                     name="select[]">
                                 {% for column in columns %}
-                                    <option selected="selected" value="{{ column.id }}">{{ column.nomeFormatado }}</option>
+                                    <option selected="selected"
+                                            value="{{ column.id }}">{{ column.nomeFormatado }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -104,7 +105,8 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2">Limite:</label></label>
                         <div class="col-sm-10">
-                            <select class="selectpicker" data-actions-box="true" name="limit" title="Nada Selecionado">
+                            <select class="selectpicker" data-actions-box="true" name="limit" title="Nada Selecionado"
+                                    data-width="100%">
                                 <option value="">Tudo</option>
                                 <option value="10" selected>10</option>
                                 <option value="25">25</option>
@@ -114,7 +116,6 @@
                         </div>
                     </div>
                     <button class="btn btn-success btn-sm">Criar Query</button>
-                    <button type="button" id="executar" class="btn btn-warning btn-sm">Apenas Executar</button>
                 </form>
             </div>
         </div>
@@ -127,14 +128,40 @@
                     {% for query in queries %}
                         <tr>
                             <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a>
-                                <button data-redirect="/tabela/{{ query.tabela.nome }}" data-url-remove-query="/query/{{ query.id }}/remove"
+                                <button data-redirect="/tabela/{{ query.tabela.nome }}"
+                                        data-url-remove-query="/query/{{ query.id }}/remove"
                                         class="btn btn-danger pull-right btn-sm remove-query">Deletar
                                 </button>
-                                <a href="{{ path('query_edit', { id : query.id }) }}" class="btn pull-right btn-sm">Editar Query</a>
+                                <a href="{{ path('query_edit', { id : query.id }) }}" class="btn pull-right btn-sm">Editar
+                                    Query</a>
                             </th>
                         </tr>
                     {% else %}
-                        <tr><td>Nenhuma Query vinculada com esta tabela</td></tr>
+                        <tr>
+                            <td>Nenhuma Query vinculada com esta tabela</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Tabelas Vinculadas</div>
+            <div class="panel-body">
+                <table class="table table-bordered table-responsive table-hovered">
+                    <tbody>
+                    {% for item in union %}
+                        <tr>
+                            <th>
+                                <a href="{{ path('tabela', { nome : item.tabela.nome }) }}">{{ item.tabela.nomeFormatado }} <small>({{ item.nome }})</small></a>
+                            </th>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>Nenhuma Tabela vinculada com esta tabela</td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -146,11 +173,12 @@
             <div class="panel-heading">Colunas</div>
 
             <div class="panel-body">
-
+                <!--
                 <button class="btn btn-success btn-sm">Adicionar Coluna</button>
                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_mesclar_coluna">Mesclar Colunas</button>
                 <br/>
                 <br/>
+                -->
 
                 <table class="table table-bordered table-responsive table-hovered">
                     <thead>
@@ -238,8 +266,8 @@
                             </td>
                             <td>
                                 <input type="checkbox" data-coluna="{{ column.id }}" class="btnSetShow"
-                                   value="{{ column.visualizar }}"
-                                   {% if column.visualizar is not empty %}checked{% endif %}/>
+                                       value="{{ column.visualizar }}"
+                                       {% if column.visualizar is not empty %}checked{% endif %}/>
                             </td>
                         </tr>
                     {% endfor %}
@@ -264,19 +292,20 @@
                 <form class="form-horizontal" action="{{ path('mesclar_colunas', { id : table.id } ) }}" method="post">
                     <div class="modal-body">
 
-                            <div class="form-group">
-                                <label class="control-label col-sm-2">Mesclar Colunas:</label>
-                                <div class="col-sm-10">
-                                    <select required class="selectpicker" multiple data-actions-box="true"
-                                            show-tick="true" title="Nada Selecionado"
-                                            data-live-search="true" data-width="100%"
-                                            name="colunas[]">
-                                        {% for column in columns %}
-                                            <option selected="selected" value="{{ column.id }}">{{ column.nomeFormatado }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Mesclar Colunas:</label>
+                            <div class="col-sm-10">
+                                <select required class="selectpicker" multiple data-actions-box="true"
+                                        show-tick="true" title="Nada Selecionado"
+                                        data-live-search="true" data-width="100%"
+                                        name="colunas[]">
+                                    {% for column in columns %}
+                                        <option selected="selected"
+                                                value="{{ column.id }}">{{ column.nomeFormatado }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
+                        </div>
 
                     </div>
 
@@ -503,7 +532,6 @@
                 })
 
 
-
             })
 
             $('.btnAddIdentificado').click(function () {
@@ -563,50 +591,50 @@
 
                 $.get('/api/formatos', function (data) {
                     swal({
-                    title: 'Formato',
-                    input: 'select',
-                    inputOptions: data,
-                    inputPlaceholder: 'Selecione um Formato',
-                    showCancelButton: true,
-                    inputValidator: function (value) {
-                        _this.val(value);
-                        return new Promise(function (resolve, reject) {
-                            if (value !== '') {
-                                resolve()
-                            } else {
-                                reject('Selecione uma tabela válida')
-                            }
-                        })
-                    }
-                }).then(function (result) {
-
-                    $.post({
-                        type: "POST",
-                        url: '/api/adicionar-formato-coluna',
-                        data: {
-                            formato: _this.val(),
-                            coluna: _this.data('coluna')
-                        }
-                    }).done(function (data) {
-
-                        swal(
-                            'Sucesso!',
-                            data.mensagem,
-                            'success'
-                        ).then(
-                            function () {
-                                window.location.reload();
+                        title: 'Formato',
+                        input: 'select',
+                        inputOptions: data,
+                        inputPlaceholder: 'Selecione um Formato',
+                        showCancelButton: true,
+                        inputValidator: function (value) {
+                            _this.val(value);
+                            return new Promise(function (resolve, reject) {
+                                if (value !== '') {
+                                    resolve()
+                                } else {
+                                    reject('Selecione uma tabela válida')
+                                }
                             })
+                        }
+                    }).then(function (result) {
 
-                    })
-                        .fail(function (data) {
+                        $.post({
+                            type: "POST",
+                            url: '/api/adicionar-formato-coluna',
+                            data: {
+                                formato: _this.val(),
+                                coluna: _this.data('coluna')
+                            }
+                        }).done(function (data) {
+
                             swal(
-                                'Error!',
+                                'Sucesso!',
                                 data.mensagem,
-                                'error'
-                            )
-                        });
-                })
+                                'success'
+                            ).then(
+                                function () {
+                                    window.location.reload();
+                                })
+
+                        })
+                            .fail(function (data) {
+                                swal(
+                                    'Error!',
+                                    data.mensagem,
+                                    'error'
+                                )
+                            });
+                    })
                 });
 
             })

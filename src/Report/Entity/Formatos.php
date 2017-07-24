@@ -18,6 +18,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Formatos
 {
+    const TIPO_DATA = 'Data';
+    const TIPO_DATA_HORA = 'Data e Hora';
+    const TIPO_MOEDA = 'Moeda';
+    const TIPO_BOOLEAN = 'Boolean';
+    const TIPO_BOOLEAN_ATIVO_INATIVO = 'Boolean Ativo/Inativo';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")

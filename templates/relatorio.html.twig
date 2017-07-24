@@ -78,3 +78,57 @@
     </div>
 
 {% endblock %}
+
+{% block js %}
+
+    <script>
+
+        $(".remove-query").click(function (e) {
+
+            e.preventDefault();
+
+            var url = $(this).data('url-remove-query');
+            var redirect = $(this).data('redirect');
+
+            swal({
+                title: 'Atenção',
+                text: "Deseja mesmo deletar esta query?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim',
+                cancelButtonText: 'Cancelar'
+            }).then(function () {
+
+                jQuery.post({
+                    type: "POST",
+                    url: url,
+                }).done(function () {
+
+                    swal(
+                        'Sucesso!',
+                        'A query foi deletada!',
+                        'success'
+                    ).then(
+                        function () {
+                            parent.window.location.href = redirect;
+                        })
+
+                })
+                    .fail(function () {
+                        swal(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        )
+                    })
+            })
+
+
+
+        });
+
+    </script>
+
+{% endblock %}

@@ -8,6 +8,7 @@
 
 use Doctrine\ORM\EntityManager;
 use Report\Entity\Colunas;
+use Report\Entity\Formatos;
 use Report\Entity\Parametros;
 use Report\Entity\Queries;
 use Report\Helpers\ParametrosHelper;
@@ -156,15 +157,14 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
             $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
 
-            if ($col->getFormato()) {
-                if ($col->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
-                    $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
-                } elseif ($col->getFormato()->getNome() == Colunas::TIPO_DATA) {
-                    $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
-                }
+            if ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
+                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
+            } elseif ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA) {
+                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
             } else {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
             }
+
         }
 
     }
@@ -369,7 +369,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     }
 
-    if (!empty($pR) && false != $pR) {
+    if ($pR) {
         foreach ($pR as $key => $item) {
 
             if (is_array($item)) {
@@ -453,7 +453,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                         switch ($arrayColumns[$key]['formato']) {
 
-                            case 'Data' :
+                            case Formatos::TIPO_DATA :
 
                                 if (empty($item)) {
                                     break;
@@ -468,7 +468,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                 $item = $data->format('d/m/Y');
                                 break;
 
-                            case 'Data e Hora' :
+                            case Formatos::TIPO_DATA_HORA :
 
                                 if (empty($item)) {
                                     break;
@@ -483,11 +483,15 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                 $item = $data->format('d/m/Y H:i:s');
                                 break;
 
-                            case 'Boolean' :
+                            case Formatos::TIPO_BOOLEAN :
                                 $item = $item ? 'Sim' : 'Nao';
                                 break;
 
-                            case 'Moeda' :
+                            case Formatos::TIPO_BOOLEAN_ATIVO_INATIVO :
+                                $item = $item ? 'Ativo' : 'Inativo';
+                                break;
+
+                            case Formatos::TIPO_MOEDA :
                                 $item = number_format($item, 2);
                                 break;
                         }
@@ -496,7 +500,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                     if ($key == $arrayColumns[$key]['nome'] && !empty($arrayColumns[$key]['visualizar'])) {
                         $retorno[$key] = [
-                            'valor' => !empty($item) ? $item : null,
+                            'valor' => !is_null($item) ? $item : null,
                             'coluna' => $key,
                             'tabela' => null,
                             'label' => null,
@@ -514,7 +518,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                         $columnsB = $app['columns.repository']->findBy(['tabela' => $table]);
 
                         $retorno[$key] = [
-                            'valor' => !empty($item) ? $item : null,
+                            'valor' => !is_null($item) ? $item : null,
                             'coluna' => $key,
                             'tabela' => $arrayColumns[$key]['tabelaNome'],
                             'label' => $item,
