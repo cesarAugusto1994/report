@@ -146,6 +146,11 @@
 
             <div class="panel-body">
 
+                <button class="btn btn-success btn-sm">Adicionar Coluna</button>
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_mesclar_coluna">Mesclar Colunas</button>
+                <br/>
+                <br/>
+
                 <table class="table table-bordered table-responsive table-hovered">
                     <thead>
                     <tr>
@@ -245,6 +250,42 @@
 
         </div>
 
+    </div>
+
+    <div class="modal fade" id="modal_mesclar_coluna" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Mesclar Colunas</h4>
+                </div>
+                <form class="form-horizontal" action="{{ path('mesclar_colunas', { id : table.id } ) }}" method="post">
+                    <div class="modal-body">
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Mesclar Colunas:</label>
+                                <div class="col-sm-10">
+                                    <select required class="selectpicker" multiple data-actions-box="true"
+                                            show-tick="true" title="Nada Selecionado"
+                                            data-live-search="true" data-width="100%"
+                                            name="colunas[]">
+                                        {% for column in columns %}
+                                            <option selected="selected" value="{{ column.id }}">{{ column.nomeFormatado }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

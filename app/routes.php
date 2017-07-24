@@ -225,20 +225,26 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $col = $app['columns.repository']->find($array['id']);
                 $parametro->setColuna($col);
 
-                if (!empty($array['tabela'])) {
+                if ($array['chavePrimaria'] == true) {
                     $tipo = 'Entidade';
-
                     $parametro->setQueryString("SELECT * FROM {$array['tabela']}");
+                } elseif (!empty($array['tabelaRef'])) {
+                    $tipo = 'Entidade';
+                    $parametro->setQueryString("SELECT * FROM {$array['tabelaRef']}");
                 } elseif (!empty($array['formato'])) {
                     $tipo = $array['formato'];
                 }
             }
 
             $parametro->setTipo($tipo);
-            $parametro->setQuery($query);
+            $parametro->setQuery($query);;
+
+            //var_dump($array);
 
             $app['parametros.repository']->save($parametro);
         }
+
+        //exit;
 
     }
 
@@ -271,7 +277,13 @@ $app->post('/query/{id}/remove', function ($id) use ($app) {
     $query = $app['queries.repository']->find($id);
 
     if (!$query) {
-        throw new ReportException("Query não Encontrada.");
+        throw new ReportException("Query nÃ£o Encontrada.");
+    }
+
+    $parametros = $app['parametros.repository']->findBy(['query' => $query]);
+
+    foreach ($parametros as $parametro) {
+        $app['parametros.repository']->remove($parametro);
     }
 
     $app['queries.repository']->remove($query);
@@ -322,7 +334,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
     $query = $app['queries.repository']->find($id);
 
     if (!$query) {
-        throw new ReportException("Query não Encontrada.", JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        throw new Exception("Query nao Encontrada.", JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     $string = $query->getQuery();
@@ -612,12 +624,11 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
     $column = $app['columns.repository']->findOneBy(['nome' => $coluna, 'tabela' => $table]);
     $key = !empty($column) ? $column->getNome() : null;
 
-    if (empty($column)) {
-        $columns = $app['columns.repository']->findBy(['tabela' => $table]);
-        $col = array_filter($columns, function ($column) {
-            return $column->isChavePrimaria();
-        });
-        $key = current($col)->getNome() ?: null;
+    if (!$column) {
+        $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'label' => true]);
+        if ($col) {
+            $key = $col->getNome();
+        }
     }
 
     $string = " SELECT * FROM {$tabela} WHERE {$key} = {$valor} ";
@@ -699,7 +710,7 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
 
                     foreach ($columnsB as $cs) {
 
-                        if ($cs->getLabel()) {
+                        if ($cs->isLabel()) {
 
                             if (!$item) {
                                 continue;
@@ -707,11 +718,26 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
 
                             $field = $key;
 
-                            if (!in_array($key, $nomesColunas)) {
+                            if ($pk) {
                                 $field = $pk;
                             }
 
-                            $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
+                            if (!in_array($key, $nomesColunas)) {
+                                $colunasTabela = $app['columns.repository']->findBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
+                                $chavePrimaria = array_filter($colunasTabela, function ($coluna) {
+                                    return $coluna->isChavePrimaria();
+                                });
+                                $chaveLabel = array_filter($colunasTabela, function ($coluna) {
+                                    return $coluna->isLabel();
+                                });
+                                if ($chaveLabel) {
+                                    $field = current($chaveLabel)->getNome();
+                                } elseif ($chavePrimaria) {
+                                    $field = current($chavePrimaria)->getNome();
+                                }
+                            }
+
+                            $string = "SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
                             $strColumn = $app['db']->fetchColumn($string);
                             $retorno[$key]['label'] = $strColumn;
                         }
@@ -750,5 +776,51 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
         ]);
 
 });
+
+$app->post('tabela/{id}/mesclar-colunas', function ($id, Request $request) use ($app) {
+
+    $table = $app['tables.repository']->find($id);
+    $columns = $app['columns.repository']->findBy(['tabela' => $table]);
+
+    $colunasTabela = array_map(function ($column) {
+        return $column->toArray();
+    }, $columns);
+
+    $colunas = $request->request->get('colunas');
+
+    if (count($colunas) == 1) {
+        throw new Exception("Informe mais de uma coluna para mescla-las.");
+    }
+
+    $colunaNome = "";
+
+    foreach ($colunas as $coluna) {
+
+        $item = array_filter($colunasTabela, function ($col) use ($coluna) {
+            return $col['id'] == $coluna;
+        });
+
+        if (!$item) {
+            throw new Exception("Coluna nÃ£o encotrada na tabela " . $table->getNome());
+        }
+
+        $item = current($item)['nome'];
+        $colunaNome .= ucwords(str_replace('_', ' ', $item)) . " - ";
+
+    }
+
+    $colunaNome = substr($colunaNome, 0, -3);
+
+    $colunaA = new Colunas();
+    $colunaA->setNome($colunaNome);
+    $colunaA->setTipo(Colunas::TIPO_MESCLADO);
+    $colunaA->setLabel(false);
+    $colunaA->setTabela($table);
+
+    $app['columns.repository']->save($colunaA);
+
+    return $app->redirect('/');
+    
+})->bind('mesclar_colunas');
 
 return $app;

@@ -3,6 +3,79 @@
 
     <div class="container">
 
+        {% if log|length > 0 %}
+            <div class="alert alert-danger">
+                <p class="lead">{{ log }}</p>
+                {% if query is not empty %}
+                    <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if parametros|length > 0 %}
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading">Formulário</div>
+
+                <div class="panel-body">
+                    {#
+                                                <div class="alert alert-warning">
+                                                    <p>Esta Query possui Parametros</p>
+                                                </div>
+                    #}
+                    <form class="form-horizontal">
+
+                        {% for keyp, parametro in parametros %}
+
+                            <input type="hidden" id="{{ keyp }}-i">
+
+                            {#
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2">{{ keyp }}:</label>
+                                    <div class="col-sm-10">
+
+                                        {% if parametro.tipo == 'classe' %}
+
+                                            <select class="selectpicker" title="Nada Selecionado"
+                                                    data-width="100%" name="{{ keyp }}"
+                                                    data-live-search="true">
+                                                {% for dado in dados %}
+                                                    <option value="{{ dado.id_status_entrega }}">{{ dado.nome_status_entrega }}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                        {% else %}
+                                        <input type="text" class="form-control parametro {% if parametro.tipo == 'date' %}datepicker2{% endif %}" required
+                                               data-param="{{ parametro.valor }}" value="{% if params is not empty %}{% for key, value in params %}{% if key == keyp %}{{ value }}{% endif %}{% endfor %}{% endif %}" name="{{ keyp }}" id="{{ keyp }}"/>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            #}
+
+                        {% endfor %}
+
+                        {% for p in parametrosR %}
+                            {{ p|raw }}
+                        {% endfor %}
+
+                        {#
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2">Query:</label>
+                                                            <div class="col-sm-10">
+                                                                <pre><textarea class="form-control" id="query-view"
+                                                                               rows="12">{{ query.query }}</textarea></pre>
+                                                            </div>
+                                                        </div>
+                        #}
+                        <button class="btn btn-primary btn-sm">Executar</button>
+                    </form>
+
+                </div>
+            </div>
+
+        {% endif %}
+
         <div class="panel panel-default">
 
             <div class="panel-heading"><b>RUN</b>
@@ -14,80 +87,6 @@
             </div>
 
             <div class="panel-body">
-
-                {% if log|length > 0 %}
-                    <div class="alert alert-danger">
-                        <p class="lead">{{ log }}</p>
-                        {% if query is not empty %}
-                            <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
-                        {% endif %}
-                    </div>
-                {% endif %}
-
-                {% if parametros|length > 0 %}
-
-                    <div class="panel panel-default">
-
-                        <div class="panel-heading">Formulário</div>
-
-                        <div class="panel-body">
-{#
-                            <div class="alert alert-warning">
-                                <p>Esta Query possui Parametros</p>
-                            </div>
-#}
-                            <form class="form-horizontal">
-
-                                {% for keyp, parametro in parametros %}
-
-                                    <input type="hidden" id="{{ keyp }}-i">
-
-                                    {#
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">{{ keyp }}:</label>
-                                            <div class="col-sm-10">
-
-                                                {% if parametro.tipo == 'classe' %}
-
-                                                    <select class="selectpicker" title="Nada Selecionado"
-                                                            data-width="100%" name="{{ keyp }}"
-                                                            data-live-search="true">
-                                                        {% for dado in dados %}
-                                                            <option value="{{ dado.id_status_entrega }}">{{ dado.nome_status_entrega }}</option>
-                                                        {% endfor %}
-                                                    </select>
-
-                                                {% else %}
-                                                <input type="text" class="form-control parametro {% if parametro.tipo == 'date' %}datepicker2{% endif %}" required
-                                                       data-param="{{ parametro.valor }}" value="{% if params is not empty %}{% for key, value in params %}{% if key == keyp %}{{ value }}{% endif %}{% endfor %}{% endif %}" name="{{ keyp }}" id="{{ keyp }}"/>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    #}
-
-                                {% endfor %}
-
-                                {% for p in parametrosR %}
-                                    {{ p|raw }}
-                                {% endfor %}
-
-{#
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2">Query:</label>
-                                    <div class="col-sm-10">
-                                        <pre><textarea class="form-control" id="query-view"
-                                                       rows="12">{{ query.query }}</textarea></pre>
-                                    </div>
-                                </div>
-#}
-                                <button class="btn btn-primary btn-sm">Executar</button>
-                            </form>
-
-                        </div>
-                    </div>
-
-                {% endif %}
-
 
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
@@ -109,7 +108,11 @@
 
                 <table class="table table-bordered table-responsive table-hover"
                        data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true" id="tableExport">
+                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
+                       data-single-select="true"
+                       data-maintain-selected="true"
+                       data-show-pagination-switch="true"
+                       data-sortable="true" id="tableExport">
 
                     {% if columns|length > 0 %}
                         <thead>

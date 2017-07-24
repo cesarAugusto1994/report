@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Colunas
 {
+    const TIPO_MESCLADO = 'MESCLADO';
+
     /**
      * @var integer
      *
@@ -131,6 +133,38 @@ class Colunas
     }
 
     /**
+     * @param string $nome
+     */
+    public function setNome($nome)
+    {
+        $this->nome = $nome;
+    }
+
+    /**
+     * @param string $tipo
+     */
+    public function setTipo($tipo)
+    {
+        $this->tipo = $tipo;
+    }
+
+    /**
+     * @param bool $chavePrimaria
+     */
+    public function setChavePrimaria($chavePrimaria)
+    {
+        $this->chavePrimaria = $chavePrimaria;
+    }
+
+    /**
+     * @param Tabelas $tabela
+     */
+    public function setTabela($tabela)
+    {
+        $this->tabela = $tabela;
+    }
+
+    /**
      * @return Tabelas
      */
     public function getTabelaRef()
@@ -231,8 +265,10 @@ class Colunas
             'id' => $this->id,
             'nome' => $this->nome,
             'tipo' => $this->tipo,
+            'chavePrimaria' => $this->chavePrimaria,
             'formato' => $this->formato ? $this->formato->getNome() : null,
-            'tabela' => $this->tabelaRef ? $this->tabelaRef->getNome() : null
+            'tabelaRef' => $this->tabelaRef ? $this->tabelaRef->getNome() : null,
+            'tabela' => $this->tabela ? $this->tabela->getNome() : null,
         ];
     }
 

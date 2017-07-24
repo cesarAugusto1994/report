@@ -38,25 +38,43 @@ class ParametrosHelper
         foreach ($this->parametros as $parametro) {
 
             $tabela = $parametro->getColuna()->getTabelaRef();
+
+            if ($parametro->getColuna()->isChavePrimaria()) {
+                $tabela = $parametro->getColuna()->getTabela();
+            }
+
             $requestedValue = $this->request->query->all();
 
-            if ($parametro->getColuna()->getTabelaRef()) {
+            if ($tabela) {
 
-                $existeColuna = $app['columns.repository']->findBy(['tabela' => $tabela->getNome(), 'nome' => $parametro->getNome()]);
+                $existeColuna = $app['columns.repository']->findBy([
+                    'tabela' => $tabela->getNome(),
+                    'nome' => $parametro->getNome()
+                ]);
 
                 $col = $parametro->getNome();
 
                 if (!$existeColuna) {
-                    $columnsB = $app['columns.repository']->findBy(['tabela' => $tabela->getNome()]);
-                    $colLabel = array_map(function ($coluna) {
-                        return $coluna->isChavePrimaria();
-                    }, $columnsB);
-                    if ($colLabel) {
+
+                    $columnsB = $app['columns.repository']->findBy([
+                        'tabela' => $tabela->getNome()]);
+
+                    $colPrimary = array_filter($columnsB, function ($coluna) {
+                        return $coluna->isChavePrimaria() == true;
+                    });
+
+                    $colLabel = array_filter($columnsB, function ($coluna) {
+                        return $coluna->isLabel() == true;
+                    });
+
+                    if (!empty($colPrimary)) {
+                        $col = $colPrimary[0]->getNome();
+                    } elseif (!empty($colLabel)) {
                         $col = $colLabel[0]->getNome();
                     }
                 }
 
-                $query = "SELECT * FROM {$tabela->getNome()} ORDER BY {$col} ASC ";
+                $query = $parametro->getQueryString();
                 $itens = $app['db']->fetchAll($query);
 
                 $select = '<div class="form-group">
@@ -69,17 +87,21 @@ class ParametrosHelper
                 foreach ($itens as $k => $item) {
 
                     $coluna = $parametro->getColuna();
-                    $colunasTabelaRef = $coluna->getTabelaRef();
+                    $tabela = $coluna->getTabelaRef();
 
-                    if ($colunasTabelaRef) {
+                    if ($parametro->getColuna()->isChavePrimaria()) {
+                        $tabela= $coluna->getTabela();
+                    }
 
-                        $colunas = $app['columns.repository']->findBy(['tabela' => $colunasTabelaRef]);
+                    if ($tabela) {
+
+                        $colunas = $app['columns.repository']->findBy(['tabela' => $tabela]);
 
                         $colunaLabel = array_filter($colunas, function ($item) {
                             return true == $item->isLabel();
                         });
 
-                        $label = null;
+                        $label = $valor = null;
 
                         if (!empty($colunaLabel)) {
                             $label = current($colunaLabel)->getNome();
@@ -87,7 +109,15 @@ class ParametrosHelper
                             $label = next($colunas)->getNome();
                         }
 
-                        $select .= '<option value="' . $item[$parametro->getNome()] . '"';
+                        if (empty($item[$parametro->getNome()])) {
+                            $valor = $item[$label];
+                        }
+
+                        if (!$valor) {
+                            $valor = $item[$parametro->getNome()];
+                        }
+
+                        $select .= '<option value="' . $valor . '"';
 
                         if (!empty($requestedValue)) {
 
@@ -95,18 +125,18 @@ class ParametrosHelper
 
                             if (is_array($selectedV)) {
                                 foreach ($selectedV as $itemV) {
-                                    if ($item[$parametro->getNome()] == $itemV) {
+                                    if ($valor == $itemV) {
                                         $select .= 'selected';
                                     }
                                 }
                             }
 
-                            if ($item[$parametro->getNome()] == $requestedValue[$parametro->getNome()]) {
+                            if ($valor == $requestedValue[$parametro->getNome()]) {
                                 $select .= 'selected';
                             }
                         }
 
-                        $select .= '>' . $item[$label] . '</option>';
+                        $select .= '>' . strtoupper($item[$label]) . '</option>';
 
                     } else {
                         $select .= '<option>Esta Entidade deve Possuir um Label</option>';
