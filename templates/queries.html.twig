@@ -31,7 +31,7 @@
                         <tr>
                             <td><a href="{{ path('query_editar', { id : query.id }) }}">{{ query.nome }}</a></td>
                             <td>
-                                <a class="btn btn-danger btn-xs execute" href="{{ path('query_execute', { id : query.id }) }}">Executar</a>
+                                <a class="btn btn-info btn-xs execute" href="{{ path('query_execute', { id : query.id }) }}">Executar</a>
                             </td>
                         </tr>
                     {% endfor %}

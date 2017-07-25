@@ -145,7 +145,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     if (!empty($where)) {
 
-        $queryString .= " WHERE 1 = 1 ";
+        $queryString .= " WHERE 1 = 1 " . PHP_EOL;
 
         foreach ($where as $key => $item) {
 
@@ -290,12 +290,18 @@ $app->post('/query/save', function (Request $request) use ($app) {
     $resultado = substr($slug, 0, $key + 1);
     $itens = explode(',', str_replace(' ', ',', $resultado));
 
+    $parametrosCadastrados = [];
+
     foreach ($itens as $item) {
 
         if (strpos($item, ':') !== false) {
             $item = strstr($item, ':');
             $key = strrpos($item, ':');
             $item = substr($item, 1, $key - 1);
+
+            if (in_array($item, $parametrosCadastrados)) {
+                continue;
+            }
 
             $parametros[$item]['tipo'] = 'text';
             $parametros[$item]['valor'] = $item;
@@ -339,7 +345,9 @@ $app->post('/query/save', function (Request $request) use ($app) {
             $parametro->setQuery($query);
             $app['parametros.repository']->save($parametro);
 
+            $parametrosCadastrados[] = $parametro->getNome();
         }
+
     }
 
     return $app->redirect('/queries');
