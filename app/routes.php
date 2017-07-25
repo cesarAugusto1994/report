@@ -294,7 +294,7 @@ $app->post('/query/{id}/remove', function ($id) use ($app) {
 
     return $app->redirect('/queries');
 
-});
+})->bind('query_remover');
 
 $app->post('/query/edit/save', function (Request $request) use ($app) {
 
