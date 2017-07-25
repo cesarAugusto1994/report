@@ -9,8 +9,7 @@
 
             <div class="panel-body">
 
-                <a href="/query/add" class="btn btn-success btn-sm">Adicionar Busca</a>
-                <hr class="small"/>
+                <a href="{{ path('query_adicionar') }}" class="btn btn-success btn-sm">Adicionar Busca</a>
 
                 <table class="table table-bordered table-responsive table-hover"
                        data-toggle="table" data-striped="true" data-search="true"
@@ -30,9 +29,9 @@
                     <tbody>
                     {% for query in queries %}
                         <tr>
-                            <td><a href="/query/edit/{{ query.id }}">{{ query.nome }}</a></td>
+                            <td><a href="{{ path('query_editar', { id : query.id }) }}">{{ query.nome }}</a></td>
                             <td>
-                                <a class="btn btn-danger btn-xs execute" href="/execute/{{ query.id }}">Executar</a>
+                                <a class="btn btn-danger btn-xs execute" href="{{ path('query_execute', { id : query.id }) }}">Executar</a>
                             </td>
                         </tr>
                     {% endfor %}

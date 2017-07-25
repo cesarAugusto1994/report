@@ -75,7 +75,7 @@ $app->get('/query/add', function () use ($app) {
 
     return $app['twig']->render('query-add.html.twig', ['tables' => $tables]);
 
-});
+})->bind('query_adicionar');
 
 $app->get('/query/edit/{id}', function ($id) use ($app) {
 
@@ -86,7 +86,7 @@ $app->get('/query/edit/{id}', function ($id) use ($app) {
     return $app['twig']->render('query-edit.html.twig',
         ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
 
-})->bind('query_edit');
+})->bind('query_editar');
 
 $app->post('/query/create', function (Request $request) use ($app) {
 
