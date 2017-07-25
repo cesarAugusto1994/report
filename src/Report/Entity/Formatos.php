@@ -23,6 +23,7 @@ class Formatos
     const TIPO_MOEDA = 'Moeda';
     const TIPO_BOOLEAN = 'Boolean';
     const TIPO_BOOLEAN_ATIVO_INATIVO = 'Boolean Ativo/Inativo';
+    const TIPO_ENUM = 'Enum';
 
     /**
      * @ORM\Id()

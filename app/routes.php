@@ -162,7 +162,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
             } elseif ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
             } else {
-                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " IN (:{$valor}:) " . PHP_EOL;
+                $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
             }
 
         }
@@ -237,6 +237,9 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 } elseif (!empty($array['tabelaRef'])) {
                     $tipo = 'Entidade';
                     $parametro->setQueryString("SELECT * FROM {$array['tabelaRef']}");
+                } elseif (!empty($array['formato']) && $array['formato'] == Formatos::TIPO_ENUM) {
+                    $tipo = 'Entidade';
+                    $parametro->setQueryString("SELECT DISTINCT {$arrayColumns[$item]} FROM {$array['tabela']}");
                 } elseif (!empty($array['formato'])) {
                     $tipo = $array['formato'];
                 }

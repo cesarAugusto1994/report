@@ -149,6 +149,50 @@ class ParametrosHelper
 
                 $retorno[] = $select;
 
+            } elseif ($parametro->getTipo() == Parametros::TIPO_ENTIDADE) {
+
+                $query = $parametro->getQueryString();
+
+                $itens = $app['db']->fetchAll($query);
+
+                $select = '<div class="form-group">
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <div class="col-sm-10">
+                                        <select class="selectpicker" required title="Nada Selecionado" multiple data-actions-box="true"
+                                        data-width="100%" id="' . $parametro->getNome() . '" name="' . $parametro->getNome() . '[]" data-live-search="true">';
+
+                foreach ($itens as $k => $item) {
+
+                    foreach ($item as $key => $i) {
+
+                        $select .= '<option value="' . $i . '"';
+
+                        if (!empty($requestedValue)) {
+
+                            $selectedV = $requestedValue[$parametro->getNome()];
+
+                            if (is_array($selectedV)) {
+                                foreach ($selectedV as $itemV) {
+                                    if ($i == $itemV) {
+                                        $select .= 'selected';
+                                    }
+                                }
+                            }
+
+                            if ($i == $selectedV) {
+                                $select .= 'selected';
+                            }
+                        }
+
+                        $select .= '>' . strtoupper($i) . '</option>';
+
+                    }
+                }
+
+                $select .= '</select></div></div>';
+
+                $retorno[] = $select;
+
             } else {
 
                 $formato = $request = null;
@@ -216,7 +260,7 @@ class ParametrosHelper
                         $select .= '</select></div></div>';
                         $retorno[] = $select;
                         break;
-                    case 'Data' :
+                    case Formatos::TIPO_DATA :
                         $retorno[] = '<div class="form-group">
                                         <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
                                         <div class="col-sm-10">
@@ -224,7 +268,7 @@ class ParametrosHelper
                                         </div>
                                       </div>';
                         break;
-                    case 'Data e Hora' :
+                    case Formatos::TIPO_DATA_HORA :
                         $retorno[] = '<div class="form-group">
                                         <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
                                         <div class="col-sm-10">

@@ -18,6 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Parametros
 {
+
+    const TIPO_ENTIDADE = 'Entidade';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
