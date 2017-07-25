@@ -161,6 +161,8 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
             } elseif ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
+            } elseif ($col->isChavePrimaria()) {
+                $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
             } else {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
             }
@@ -262,19 +264,87 @@ $app->post('/query/save', function (Request $request) use ($app) {
     $tabela = $request->request->get('tabela');
     $queryString = $request->request->get('query');
 
-    $tabela = $app['tables.repository']->find($tabela);
+    $table = null;
+
+    if (!$nome) {
+        $nome = 'Busca ' . date('dmYHis');
+    }
+
+    if ($tabela) {
+        $table = $app['tables.repository']->find($tabela);
+    }
 
     $query = new Queries();
     $query->setNome($nome);
-    $query->setTabela($tabela);
+    $query->setTabela($table);
     $query->setQuery($queryString);
     $query->setQueryString(true);
-
     $app['queries.repository']->save($query);
+
+    $string = $queryString;
+
+    $parametros = $dados = [];
+
+    $slug = strstr($string, ':');
+    $key = strrpos($slug, ':');
+    $resultado = substr($slug, 0, $key + 1);
+    $itens = explode(',', str_replace(' ', ',', $resultado));
+
+    foreach ($itens as $item) {
+
+        if (strpos($item, ':') !== false) {
+            $item = strstr($item, ':');
+            $key = strrpos($item, ':');
+            $item = substr($item, 1, $key - 1);
+
+            $parametros[$item]['tipo'] = 'text';
+            $parametros[$item]['valor'] = $item;
+
+            $parametro = new Parametros();
+            $parametro->setQueryParametro($item);
+
+            if (strpos($item, 'Data') !== false) {
+                $parametros[$item]['tipo'] = 'Data';
+                $newKey = strrpos($item, '-');
+                $parametros[$item]['valor'] = substr($item, 0, $newKey);
+            } elseif (strpos($item, 'Entity') !== false) {
+
+                $parametros[$item]['tipo'] = 'Entidade';
+                $newKey = strrpos($item, '-');
+                $valor = substr($item, 0, $newKey);
+
+                $parametros[$item]['valor'] = $valor;
+
+                $tabela = strstr($item, '%');
+                $newKey2 = strrpos($tabela, '%');
+                $nomeTabela = substr($tabela, 1, $newKey2 - 1);
+
+                if (!$tabela) {
+                    throw new Exception("É necessário informar a qual tabela a entidade está vinculada.");
+                }
+
+                $tabela = $app['tables.repository']->findOneBy(['nome' => $nomeTabela]);
+
+                if (!$tabela) {
+                    throw new Exception("tabela não encontrada.");
+                }
+
+                $parametro->setTabela($tabela);
+                $select = "SELECT * FROM {$nomeTabela}";
+                $parametro->setQueryString($select);
+            }
+
+            $parametro->setNome($parametros[$item]['valor']);
+            $parametro->setTipo($parametros[$item]['tipo']);
+            $parametro->setQuery($query);
+            $app['parametros.repository']->save($parametro);
+
+        }
+    }
 
     return $app->redirect('/queries');
 
-});
+})->bind('query_salvar');
 
 $app->post('/query/{id}/remove', function ($id) use ($app) {
 
@@ -373,13 +443,52 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
     }
 
     if ($pR) {
+
+        $parametrosE = $app['parametros.repository']->findBy(['query' => $pR['query']]);
+
+        $arrParametros = [];
+
+        foreach ($parametrosE as $param) {
+            $arrParametros[] = array_merge(
+                [
+                    'nome' => $param->getNome(),
+                    'tipo' => $param->getTipo(),
+                    'nomeQuery' => $param->getQueryParametro(),
+                    'valor' => $param->getQueryParametro()
+                ], $arrParametros);
+        }
+
         foreach ($pR as $key => $item) {
+
+            $valor = null;
+
+            foreach ($arrParametros as $arrParametro) {
+
+                if ($arrParametro['nome'] != $key) {
+                    continue;
+                }
+
+                if ($arrParametro['tipo'] == 'Data') {
+
+                    if (strpos($arrParametro['nome'], '-inicio') !== false) {
+                        //TODO
+                    }
+
+                    if (strpos($arrParametro['nome'], '-fim') !== false) {
+                        //TODO
+                    }
+
+                }
+
+                $valor = $arrParametro['nomeQuery'];
+
+            }
 
             if (is_array($item)) {
                 $item = implode(',', $item);
             }
 
-            $string = str_replace(':' . $key . ':', $item, $string);
+            $string = str_replace(':' . $valor . ':', $item, $string);
         }
     }
 
@@ -413,6 +522,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                     'log' => $log,
                     'query' => $query,
                     'parametros' => null,
+                    'parametrosR' => $parametrosR,
                     'params' => $pR,
                     'table' => $query->getTabela(),
                 ]);

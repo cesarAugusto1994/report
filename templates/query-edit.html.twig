@@ -23,7 +23,7 @@
                         <div class="col-sm-10">
                             <select name="tabela" class="selectpicker" data-live-search="true" data-width="100%">
                                 <option></option>
-                                {% for table in tables %}
+                                {% for table in tables and tables is defined %}
                                     <option value="{{ table.id }}"
                                             {% if query.tabela.id == table.id %}selected{% endif %}>{{ table.nome }}</option>
                                 {% endfor %}

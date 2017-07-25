@@ -34,15 +34,25 @@ class ParametrosHelper
 
     public function render(Application $app)
     {
+        if (empty($this->parametros)) {
+            return;
+        }
+
         $retorno = [];
+
+        $param = $this->parametros[0];
+
+        $retorno[] = "<input type='hidden' name='query' value={$param->getQuery()->getId()}>";
 
         foreach ($this->parametros as $parametro) {
 
-            $tabela = $parametro->getColuna()->getTabelaRef();
+            $tabela = $parametro->getColuna() ? $parametro->getColuna()->getTabelaRef() : null;
 
-            if ($parametro->getColuna()->isChavePrimaria()) {
+            if ($parametro->getColuna() && $parametro->getColuna()->isChavePrimaria()) {
                 $tabela = $parametro->getColuna()->getTabela();
             }
+
+            $nomeItem = $parametro->getColuna() ? $parametro->getColuna()->getNomeFormatado() : $parametro->getNome();
 
             $requestedValue = $this->request->query->all();
 
@@ -79,7 +89,7 @@ class ParametrosHelper
                 $itens = $app['db']->fetchAll($query);
 
                 $select = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
                                         <div class="col-sm-10">
                                         <select class="selectpicker" required title="Nada Selecionado" multiple data-actions-box="true"
                                         data-width="100%" id="' . $parametro->getNome() . '" name="' . $parametro->getNome() . '[]" data-live-search="true">';
@@ -156,37 +166,65 @@ class ParametrosHelper
                 $itens = $app['db']->fetchAll($query);
 
                 $select = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
                                         <div class="col-sm-10">
                                         <select class="selectpicker" required title="Nada Selecionado" multiple data-actions-box="true"
                                         data-width="100%" id="' . $parametro->getNome() . '" name="' . $parametro->getNome() . '[]" data-live-search="true">';
 
                 foreach ($itens as $k => $item) {
 
-                    foreach ($item as $key => $i) {
+                    $tables = $app['tables.repository']->find($parametro->getTabela());
+                    $colunas = $app['columns.repository']->findBy(['tabela' => $tables]);
 
-                        $select .= '<option value="' . $i . '"';
+                    $colunaLabel = array_filter($colunas, function ($item) {
+                        return true == $item->isLabel();
+                    });
 
-                        if (!empty($requestedValue)) {
+                    $colunaChavePrimaria = array_filter($colunas, function ($item) {
+                        return true == $item->isChavePrimaria();
+                    });
 
-                            $selectedV = $requestedValue[$parametro->getNome()];
+                    $label = $index = $valor = null;
 
-                            if (is_array($selectedV)) {
-                                foreach ($selectedV as $itemV) {
-                                    if ($i == $itemV) {
-                                        $select .= 'selected';
-                                    }
+                    if (!empty($colunaLabel)) {
+                        $label = current($colunaLabel)->getNome();
+                    } else {
+                        $label = $colunas[0]->getNome();
+                    }
+
+                    if (!empty($colunaChavePrimaria)) {
+                        $index = current($colunaChavePrimaria)->getNome();
+                        $valor = $item[$index];
+                    }
+
+                    if (empty($item[$parametro->getNome()]) && empty($valor)) {
+                        $valor = $item[$label];
+                    }
+
+                    if (!$valor) {
+                        $valor = $item[$parametro->getNome()];
+                    }
+
+                    $select .= '<option value="' . $valor . '"';
+
+                    if (!empty($requestedValue)) {
+
+                        $selectedV = $requestedValue[$parametro->getNome()];
+
+                        if (is_array($selectedV)) {
+                            foreach ($selectedV as $itemV) {
+                                if ($valor == $itemV) {
+                                    $select .= 'selected';
                                 }
-                            }
-
-                            if ($i == $selectedV) {
-                                $select .= 'selected';
                             }
                         }
 
-                        $select .= '>' . strtoupper($i) . '</option>';
-
+                        if ($valor == $selectedV) {
+                            $select .= 'selected';
+                        }
                     }
+
+                    $select .= '>' . strtoupper($item[$label]) . '</option>';
                 }
 
                 $select .= '</select></div></div>';
@@ -197,8 +235,10 @@ class ParametrosHelper
 
                 $formato = $request = null;
 
-                if ($parametro->getColuna()->getFormato()) {
+                if ($parametro->getColuna() && $parametro->getColuna()->getFormato()) {
                     $formato = $parametro->getColuna()->getFormato()->getNome();
+                } else {
+                    $formato = $parametro->getTipo();
                 }
 
                 if (!empty($requestedValue)) {
@@ -210,7 +250,7 @@ class ParametrosHelper
                     case Formatos::TIPO_BOOLEAN :
 
                         $select = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
                                         <div class="col-sm-10">
                                         <select class="selectpicker" required title="Nada Selecionado" multiple data-actions-box="true"
                                         data-width="100%" id="' . $parametro->getNome() . '" name=' . $parametro->getNome() . '[]>';
@@ -261,24 +301,38 @@ class ParametrosHelper
                         $retorno[] = $select;
                         break;
                     case Formatos::TIPO_DATA :
+
+                        $todo = '<div class="form-group">
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
+                                        <div class="col-sm-10">
+                                            <div class="input-daterange input-group" id="datepicker">
+                                                <input type="text" class="input-sm form-control" name="' . $parametro->getNome() . '-inicio" />
+                                                <span class="input-group-addon">Até</span>
+                                                <input type="text" class="input-sm form-control" name="' . $parametro->getNome() . '-fim" />
+                                            </div>
+                                        </div>
+                                      </div>';
+
                         $retorno[] = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
                                         <div class="col-sm-10">
                                             <input type="text" required class="form-control datepicker" name="' . $parametro->getNome() . '" value="' . $request . '"/>
                                         </div>
                                       </div>';
                         break;
                     case Formatos::TIPO_DATA_HORA :
+
                         $retorno[] = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>
                                         <div class="col-sm-10">
                                             <input type="text" required class="form-control datepicker2" name="' . $parametro->getNome() . '" value="' . $request . '"/>
                                         </div>
                                       </div>';
                         break;
                     default :
+
                         $retorno[] = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem  . ':</label>
                                         <div class="col-sm-10">
                                             <input type="text" required class="form-control" name="' . $parametro->getNome() . '" value="' . $request . '"/>
                                         </div>

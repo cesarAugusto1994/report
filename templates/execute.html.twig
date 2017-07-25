@@ -12,7 +12,7 @@
             </div>
         {% endif %}
 
-        {% if parametros|length > 0 %}
+        {% if parametros is defined %}
 
             <div class="panel panel-default">
 
@@ -28,9 +28,11 @@
 
                         {% endfor %}
 
-                        {% for p in parametrosR %}
-                            {{ p|raw }}
-                        {% endfor %}
+                        {% if parametrosR is defined %}
+                            {% for p in parametrosR %}
+                                {{ p|raw }}
+                            {% endfor %}
+                        {% endif %}
 
                         <button class="btn btn-primary btn-sm">Executar</button>
                     </form>
@@ -40,12 +42,12 @@
 
         {% endif %}
 
-        {% if result is not empty %}
+        {% if result is defined %}
 
             <div class="panel panel-default">
 
             <div class="panel-heading"><b>RUN</b>
-                {% if query is not empty %}
+                {% if query is not empty and query.tabela is not empty %}
                     <a href="{{ path('tabela', { nome : query.tabela.nome }) }}" class="btn btn-success btn-xs pull-right">{{ query.tabela.nomeFormatado }}</a>
                 {% elseif table is not empty %}
                     <a href="{{ path('tabela', { nome : table }) }}" class="btn btn-success btn-xs pull-right">{{ table|replace('_', ' ')|capitalize }}</a>
@@ -126,6 +128,11 @@
     <script>
 
         $(document).ready(function () {
+
+            $('.input-daterange').datepicker({
+                todayBtn: true,
+                clearBtn: true
+            });
 
             $('.datepicker').datepicker({
 

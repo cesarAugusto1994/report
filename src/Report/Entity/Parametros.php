@@ -58,6 +58,12 @@ class Parametros
     private $queryString;
 
     /**
+     * @ORM\Column(name="query_parametro", type="string")
+     * @var string
+     */
+    private $queryParametro;
+
+    /**
      * @var Colunas
      *
      * @ORM\ManyToOne(targetEntity="Colunas")
@@ -66,6 +72,16 @@ class Parametros
      * })
      */
     private $coluna;
+
+    /**
+     * @var Tabelas
+     *
+     * @ORM\ManyToOne(targetEntity="Tabelas")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tabela_id", referencedColumnName="id")
+     * })
+     */
+    private $tabela;
 
     /**
      * @return int
@@ -140,6 +156,22 @@ class Parametros
     }
 
     /**
+     * @return mixed
+     */
+    public function getQueryParametro()
+    {
+        return $this->queryParametro;
+    }
+
+    /**
+     * @param mixed $queryParametro
+     */
+    public function setQueryParametro($queryParametro)
+    {
+        $this->queryParametro = $queryParametro;
+    }
+
+    /**
      * @return Colunas
      */
     public function getColuna()
@@ -153,5 +185,21 @@ class Parametros
     public function setColuna($coluna)
     {
         $this->coluna = $coluna;
+    }
+
+    /**
+     * @return Tabelas
+     */
+    public function getTabela()
+    {
+        return $this->tabela;
+    }
+
+    /**
+     * @param Tabelas $tabela
+     */
+    public function setTabela($tabela)
+    {
+        $this->tabela = $tabela;
     }
 }
