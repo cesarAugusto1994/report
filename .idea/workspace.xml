@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fa8bc757-59b1-4281-86ad-edeaac5423e5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/routes.php" afterPath="$PROJECT_DIR$/app/routes.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/relatorio.html.twig" afterPath="$PROJECT_DIR$/templates/relatorio.html.twig" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/README.rst" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/table.html.twig" afterPath="$PROJECT_DIR$/templates/table.html.twig" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -48,55 +50,21 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="routes.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/routes.php">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="568">
-              <caret line="257" column="0" lean-forward="true" selection-start-line="257" selection-start-column="0" selection-end-line="257" selection-end-column="0" />
-              <folding>
-                <element signature="e#87#118#0#PHP" expanded="true" />
-                <element signature="e#510#682#1#PHP" expanded="false" />
-                <element signature="e#721#899#1#PHP" expanded="false" />
-                <element signature="e#948#1750#1#PHP" expanded="false" />
-                <element signature="e#1792#1954#1#PHP" expanded="false" />
-                <element signature="e#1999#2179#1#PHP" expanded="false" />
-                <element signature="e#2238#2610#1#PHP" expanded="false" />
-                <element signature="e#2664#7817#1#PHP" expanded="false" />
-                <element signature="e#7847#8338#1#PHP" expanded="false" />
-                <element signature="e#8375#8820#1#PHP" expanded="false" />
-                <element signature="e#8878#9556#1#PHP" expanded="false" />
-                <element signature="e#9587#19065#1#PHP" expanded="false" />
-                <element signature="e#19116#19510#1#PHP" expanded="false" />
-                <element signature="e#19562#27335#1#PHP" expanded="false" />
-                <element signature="e#27381#28564#1#PHP" expanded="false" />
-                <marker date="1500986630412" expanded="true" signature="6987:7001" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="7168:7182" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="7394:7438" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="17649:17677" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17678" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17713" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17720" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17728" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17731" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="17649:17738" ph="SELECT ${{$c... " />
-                <marker date="1500986630412" expanded="true" signature="20360:20386" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="20360:20395" ph="SELECT * FRO... " />
-                <marker date="1500986630412" expanded="true" signature="20360:20401" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="20360:20402" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="20360:20408" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="20360:20411" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="20360:20419" ph="SELECT * FRO... $" />
-                <marker date="1500986630412" expanded="true" signature="26134:26216" ph="SELECT ${{$c... " />
-              </folding>
+            <state relative-caret-position="42">
+              <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="relatorio.html.twig" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/relatorio.html.twig">
+      <file leaf-file-name="table.html.twig" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/table.html.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="441">
-              <caret line="62" column="48" lean-forward="true" selection-start-line="62" selection-start-column="48" selection-end-line="62" selection-end-column="48" />
+            <state relative-caret-position="324">
+              <caret line="136" column="33" lean-forward="true" selection-start-line="136" selection-start-column="33" selection-end-line="136" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -160,7 +128,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/bootstrap.php" />
         <option value="$PROJECT_DIR$/bin/console" />
         <option value="$PROJECT_DIR$/bin/migrations.php" />
         <option value="$PROJECT_DIR$/src/Report/Entity/Query.php" />
@@ -202,7 +169,6 @@
         <option value="$PROJECT_DIR$/src/Report/Entity/Colunas.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/README.rst" />
-        <option value="$PROJECT_DIR$/templates/table.html.twig" />
         <option value="$PROJECT_DIR$/templates/tabelas.html.twig" />
         <option value="$PROJECT_DIR$/src/Report/Entity/Formatos.php" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql" />
@@ -211,6 +177,8 @@
         <option value="$PROJECT_DIR$/templates/queries.html.twig" />
         <option value="$PROJECT_DIR$/app/routes.php" />
         <option value="$PROJECT_DIR$/templates/relatorio.html.twig" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/templates/table.html.twig" />
       </list>
     </option>
   </component>
@@ -500,12 +468,12 @@
       <workItem from="1500558824950" duration="10819000" />
       <workItem from="1500635744866" duration="28512000" />
       <workItem from="1500894631790" duration="30918000" />
-      <workItem from="1500981190260" duration="5682000" />
+      <workItem from="1500981190260" duration="5874000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="218244000" />
+    <option name="totallyTimeSpent" value="218436000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
@@ -830,13 +798,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="12" lean-forward="true" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
@@ -863,14 +824,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/table.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="165" column="28" lean-forward="false" selection-start-line="165" selection-start-column="28" selection-end-line="165" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -979,18 +932,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/relatorio.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="62" column="48" lean-forward="true" selection-start-line="62" selection-start-column="48" selection-end-line="62" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/routes.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="568">
-          <caret line="257" column="0" lean-forward="true" selection-start-line="257" selection-start-column="0" selection-end-line="257" selection-end-column="0" />
+        <state relative-caret-position="121">
+          <caret line="18" column="69" lean-forward="true" selection-start-line="18" selection-start-column="69" selection-end-line="18" selection-end-column="69" />
           <folding>
             <element signature="e#87#118#0#PHP" expanded="true" />
             <element signature="e#510#682#1#PHP" expanded="false" />
@@ -1026,6 +971,30 @@
             <marker date="1500986630412" expanded="true" signature="20360:20419" ph="SELECT * FRO... $" />
             <marker date="1500986630412" expanded="true" signature="26134:26216" ph="SELECT ${{$c... " />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/relatorio.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="62" column="48" lean-forward="true" selection-start-line="62" selection-start-column="48" selection-end-line="62" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/table.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="136" column="33" lean-forward="true" selection-start-line="136" selection-start-column="33" selection-end-line="136" selection-end-column="33" />
+          <folding />
         </state>
       </provider>
     </entry>
