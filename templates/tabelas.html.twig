@@ -19,6 +19,7 @@
                     <thead>
                     <tr>
                         <th>Nome</th>
+                        <th>Banco</th>
                     </tr>
                     </thead>
 
@@ -26,6 +27,7 @@
                     {% for table in tables %}
                         <tr>
                             <td><a href="/tabela/{{ table.nome }}">{{ table.nomeFormatado }}</a></td>
+                            <td><a href="/tabela/{{ table.nome }}">{{ table.schema }}</a></td>
                         </tr>
                     {% else %}
                         <tr>

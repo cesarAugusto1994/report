@@ -59,7 +59,7 @@
                                         data-live-search="true" data-width="100%"
                                         name="tabelas[]">
                                     {% for tabela in tabelas %}
-                                        <option value="{{ tabela.id }}">{{ tabela.nomeFormatado }}</option>
+                                        <option value="{{ tabela.id }}">{{ tabela.nomeFormatado }}<small> - {{ tabela.schema }}</small></option>
                                     {% endfor %}
                                 </select>
                             </div>

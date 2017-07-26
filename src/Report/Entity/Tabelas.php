@@ -38,7 +38,7 @@ class Tabelas
     /**
      * @var string
      *
-     * @ORM\Column(name="schema", type="string", length=60, nullable=true)
+     * @ORM\Column(name="banco", type="string", length=60, nullable=true)
      */
     private $schema;
 

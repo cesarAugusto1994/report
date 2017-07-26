@@ -112,7 +112,15 @@ class ParametrosHelper
                             return true == $item->isLabel();
                         });
 
-                        $label = $valor = null;
+                        $colunaChavePrimaria = array_filter($colunas, function ($item) {
+                            return true == $item->isChavePrimaria();
+                        });
+
+                        $pk =  $label = $valor = null;
+
+                        if (!empty($colunaChavePrimaria)) {
+                            $pk = current($colunaChavePrimaria)->getNome();
+                        }
 
                         if (!empty($colunaLabel)) {
                             $label = current($colunaLabel)->getNome();
@@ -120,8 +128,16 @@ class ParametrosHelper
                             $label = next($colunas)->getNome();
                         }
 
+                        if (!$pk) {
+                            $pk = $label;
+                        }
+
                         if (empty($item[$parametro->getNome()])) {
-                            $valor = $item[$label];
+                            if (isset($item[$pk])) {
+                                $valor = $item[$pk];
+                            } else {
+                                $valor = $item[$label];
+                            }
                         }
 
                         if (!$valor) {
@@ -184,7 +200,14 @@ class ParametrosHelper
                         return true == $item->isChavePrimaria();
                     });
 
-                    $label = $index = $valor = null;
+                    $nome = $index = $valor = null;
+
+                    if (!empty($colunaChavePrimaria)) {
+                        $index = current($colunaChavePrimaria)->getNome();
+                        if (isset($item[$index])) {
+                            $valor = $item[$index];
+                        }
+                    }
 
                     if (!empty($colunaLabel)) {
                         $label = current($colunaLabel)->getNome();
@@ -192,9 +215,14 @@ class ParametrosHelper
                         $label = $colunas[0]->getNome();
                     }
 
-                    if (!empty($colunaChavePrimaria)) {
-                        $index = current($colunaChavePrimaria)->getNome();
-                        $valor = $item[$index];
+                    if (!isset($item[$index]) && !isset($item[$label])) {
+                        $nome = strtoupper($item[$parametro->getNome()]);
+                    } elseif (isset($item[$index]) && !isset($item[$label])) {
+                        $nome = strtoupper($item[$index]);
+                    } elseif (isset($item[$index]) && isset($item[$label])) {
+                        $nome = strtoupper($item[$index]);
+                    } elseif (!isset($item[$index]) && isset($item[$label])) {
+                        $nome = strtoupper($item[$label]);
                     }
 
                     if (empty($item[$parametro->getNome()]) && empty($valor)) {
@@ -224,7 +252,7 @@ class ParametrosHelper
                         }
                     }
 
-                    $select .= '>' . strtoupper($item[$label]) . '</option>';
+                    $select .= '>' . $nome . '</option>';
                 }
 
                 $select .= '</select></div></div>';
@@ -248,6 +276,7 @@ class ParametrosHelper
                 switch ($formato) {
 
                     case Formatos::TIPO_BOOLEAN :
+                    case Formatos::TIPO_BOOLEAN_ATIVO_INATIVO :
 
                         $select = '<div class="form-group">
                                         <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nomeItem . ':</label>

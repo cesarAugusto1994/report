@@ -16,6 +16,8 @@ class Colunas
     const TIPO_DATA = 'Data';
     const TIPO_DATA_HORA = 'Data e Hora';
 
+    const DATA_TYPE_INT = 'int';
+
     /**
      * @var integer
      *

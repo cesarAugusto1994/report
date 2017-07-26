@@ -11,6 +11,7 @@ use Report\Entity\Colunas;
 use Report\Entity\Formatos;
 use Report\Entity\Parametros;
 use Report\Entity\Queries;
+use Report\Entity\Tabelas;
 use Report\Helpers\ParametrosHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -83,8 +84,11 @@ $app->get('/query/edit/{id}', function ($id) use ($app) {
     $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);
     $query = $app['queries.repository']->find($id);
 
-    return $app['twig']->render('query-edit.html.twig',
-        ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
+    if (!$query) {
+        throw new Exception("Query não Encontrada");
+    }
+
+    return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
 
 })->bind('query_editar');
 
@@ -129,7 +133,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     }
 
-    $queryString .= " FROM " . $table->getNome() . ' ' . $alias . PHP_EOL;
+    $queryString .= " FROM {$table->getSchema()}.{$table->getNome()} {$alias}" . PHP_EOL;
 
     if (!empty($inner)) {
 
@@ -155,13 +159,16 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $valor = implode(',', $arrayColumns[$item]);
             }
 
-            $col = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
+            /**
+             * @var Colunas $coluna
+             */
+            $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
 
-            if ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
+            if ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
-            } elseif ($col->getFormato() && $col->getFormato()->getNome() == Colunas::TIPO_DATA) {
+            } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
-            } elseif ($col->isChavePrimaria()) {
+            } elseif ($coluna->isChavePrimaria() || $coluna->isLabel() || $coluna->getTipo() == Colunas::DATA_TYPE_INT) {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
             } else {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
@@ -235,20 +242,30 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
                 if ($array['chavePrimaria'] == true) {
                     $tipo = 'Entidade';
-                    $parametro->setQueryString("SELECT * FROM {$array['tabela']}");
+                    /**
+                     * @var Tabelas $tabela
+                     */
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
                 } elseif (!empty($array['tabelaRef'])) {
                     $tipo = 'Entidade';
-                    $parametro->setQueryString("SELECT * FROM {$array['tabelaRef']}");
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabelaRef']]);
+                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
                 } elseif (!empty($array['formato']) && $array['formato'] == Formatos::TIPO_ENUM) {
                     $tipo = 'Entidade';
-                    $parametro->setQueryString("SELECT DISTINCT {$arrayColumns[$item]} FROM {$array['tabela']}");
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    $parametro->setQueryString("SELECT DISTINCT {$arrayColumns[$item]} FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
                 } elseif (!empty($array['formato'])) {
                     $tipo = $array['formato'];
                 }
             }
 
             $parametro->setTipo($tipo);
-            $parametro->setQuery($query);;
+            $parametro->setQuery($query);
+            $parametro->setQueryParametro($arrayColumns[$item]);
 
             $app['parametros.repository']->save($parametro);
         }
@@ -658,6 +675,9 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                         foreach ($columnsB as $cs) {
 
+                            /**
+                             * @var Colunas $cs
+                             */
                             if ($cs->isLabel()) {
 
                                 if (!$item) {
@@ -670,7 +690,9 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                                     $field = $pk;
                                 }
 
-                                $string = " SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
+                                $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
+
+                                $string = " SELECT {$cs->getNome()} FROM {$table->getSchema()}.{$table->getNome()} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
                             }
@@ -753,7 +775,7 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
 
     $strColumns = substr($strColumns, 0, -2);
 
-    $string = "SELECT {$strColumns} FROM {$tabela} WHERE {$key} = {$valor}";
+    $string = "SELECT {$strColumns} FROM {$table->getSchema()}.{$tabela} WHERE {$key} = {$valor}";
 
     try {
         $result = $app['db']->fetchAll($string);
@@ -903,7 +925,9 @@ $app->get('/execute/{tabela}/{coluna}/{valor}', function ($tabela, $coluna, $val
                                 }
                             }
 
-                            $string = "SELECT {$cs->getNome()} FROM {$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
+                            $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
+
+                            $string = "SELECT {$cs->getNome()} FROM {$table->getSchema()}.{$arrayColumns[$key]['tabelaNome']} WHERE {$field} = {$item}";
                             $strColumn = $app['db']->fetchColumn($string);
                             $retorno[$key]['label'] = $strColumn;
                         }

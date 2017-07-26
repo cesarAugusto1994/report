@@ -8,7 +8,7 @@
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <user-name>webpdv</user-name>
-      <introspection-schemas>*:information_schema,relatorio,webpdv</introspection-schemas>
+      <introspection-schemas>*:curriculos,information_schema,relatorio,webpdv</introspection-schemas>
     </data-source>
   </component>
 </project>

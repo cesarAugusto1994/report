@@ -210,7 +210,7 @@ $api->get('/tabelas', function () use ($app) {
     $retorno = [];
 
     foreach ($tables as $table) {
-        $retorno[$table->getId()] = $table->getNomeFormatado();
+        $retorno[$table->getId()] = $table->getNomeFormatado() . ' - ' . $table->getSchema();
     }
 
     return new JsonResponse($retorno);
