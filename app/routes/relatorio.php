@@ -25,6 +25,10 @@ $relatorio->get('/{nome}', function ($nome) use ($app) {
         $retornoQueries = array_merge($app['queries.repository']->findBy(['tabela' => $item]), $retornoQueries);
     }
 
+    if (empty($retornoQueries)) {
+        $retornoQueries = $app['queries.repository']->findBy(['relatorio' => $relatorio]);
+    }
+
     return $app['twig']->render('relatorio.html.twig', ['relatorio' => $relatorio, 'tabelas' => $tables, 'queries' => $retornoQueries]);
 
 })->bind('relatorio');

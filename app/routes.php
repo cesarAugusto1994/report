@@ -73,8 +73,9 @@ $app->get('/queries', function () use ($app) {
 $app->get('/query/add', function () use ($app) {
 
     $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+    $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);
 
-    return $app['twig']->render('query-add.html.twig', ['tables' => $tables]);
+    return $app['twig']->render('query-add.html.twig', ['tables' => $tables, 'relatorios' => $relatorios]);
 
 })->bind('query_adicionar');
 
