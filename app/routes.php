@@ -165,12 +165,27 @@ $app->post('/query/create', function (Request $request) use ($app) {
              */
             $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
 
+            $isInteiro = false;
+
+            if ($coluna->getTabelaRef()) {
+                /**
+                 * @var Colunas $colunaRef
+                 */
+                $colunaRef = $app['columns.repository']->findOneBy(['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]);
+                if ($colunaRef) {
+                    $isInteiro = true;
+                }
+            }
+
             if ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
             } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
-            } elseif ($coluna->isChavePrimaria() || $coluna->isLabel() || $coluna->getTipo() == Colunas::DATA_TYPE_INT || in_array($coluna->getFormato()->getNome(),
-                    [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO])
+            } elseif ($isInteiro||
+                $coluna->isChavePrimaria() ||
+                $coluna->isLabel() && !is_numeric($valor) ||
+                $coluna->getTipo() == Colunas::DATA_TYPE_INT || 
+                $coluna->getFormato() && in_array($coluna->getFormato()->getNome(), [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO])
             ) {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
             } else {
@@ -208,7 +223,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
         $queryString .= " LIMIT " . $limit;
     }
 
-    $nome = 'Busca na Tabela ' . $table->getNome() . ' ' . date('dmYHis');
+    $nome = $table->getNomeFormatado() . '_v' . date('dmYHis');
 
     $query = new Queries();
     $query->setNome($nome);
@@ -287,7 +302,13 @@ $app->post('/query/save', function (Request $request) use ($app) {
     $table = null;
 
     if (!$nome) {
-        $nome = 'Busca ' . date('dmYHis');
+        $nome = 'Busca_v' . date('dmYHis');
+    }
+
+    $queryExiste = $app['queries.repository']->findOneBy(['nome' => $nome]);
+
+    if ($queryExiste) {
+        $nome = $nome . '_v'. date('dmYHis');
     }
 
     if ($tabela) {
@@ -319,6 +340,8 @@ $app->post('/query/save', function (Request $request) use ($app) {
             $key = strrpos($item, ':');
             $item = substr($item, 1, $key - 1);
 
+            $queryParametro = $item;
+
             if (in_array($item, $parametrosCadastrados)) {
                 continue;
             }
@@ -327,12 +350,13 @@ $app->post('/query/save', function (Request $request) use ($app) {
             $parametros[$item]['valor'] = $item;
 
             $parametro = new Parametros();
-            $parametro->setQueryParametro($item);
+            $parametro->setQueryParametro($queryParametro);
 
             if (strpos($item, 'Data') !== false) {
                 $parametros[$item]['tipo'] = 'Data';
                 $newKey = strrpos($item, '-');
                 $parametros[$item]['valor'] = substr($item, 0, $newKey);
+                echo $parametros[$item]['valor'];
             } elseif (strpos($item, 'Entity') !== false) {
 
                 $parametros[$item]['tipo'] = 'Entidade';
@@ -365,9 +389,8 @@ $app->post('/query/save', function (Request $request) use ($app) {
             $parametro->setQuery($query);
             $app['parametros.repository']->save($parametro);
 
-            $parametrosCadastrados[] = $parametro->getNome();
+            array_push($parametrosCadastrados, $parametro->getQueryParametro());
         }
-
     }
 
     return $app->redirect('/queries');

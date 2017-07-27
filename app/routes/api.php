@@ -12,6 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 $api = $app['controllers_factory'];
 
+$api->get('/queries', function (Request $request) use ($app) {
+
+    $queries = $app['queries.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($queries as $query) {
+        $retorno[] = $query->toArray();
+    }
+
+    return new JsonResponse($retorno);
+});
+
 $api->get('/tabela/{id}/colunas', function ($id) use ($app) {
 
     $table = $app['tables.repository']->find($id);

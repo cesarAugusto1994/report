@@ -230,7 +230,9 @@ class ParametrosHelper
                     }
 
                     if (empty($item[$parametro->getNome()]) && empty($valor)) {
-                        $valor = $item[$label];
+                        if (isset($item[$label])) {
+                            $valor = $item[$label];
+                        }
                     }
 
                     if (!$valor) {

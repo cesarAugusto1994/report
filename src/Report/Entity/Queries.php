@@ -148,5 +148,23 @@ class Queries
     {
         $this->relatorio = $relatorio;
     }
+
+    public function getLinkNome()
+    {
+        return "<a href='/query/edit/".$this->id."'>{$this->nome}</a>";
+    }
+
+    public function getLinkExecute()
+    {
+        return "<a class=\"btn btn-info btn-xs execute\" href=\"/execute/{$this->id}\">Executar</a>";
+    }
+
+    public function toArray()
+    {
+        return [
+            'nome' => $this->getLinkNome(),
+            'execute' => $this->getLinkExecute()
+        ];
+    }
 }
 

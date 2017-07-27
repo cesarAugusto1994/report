@@ -24,12 +24,7 @@
                     <tbody>
                     {% for query in queries %}
                         <tr>
-                            <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a>
-                                <button data-redirect="{{ path('tabela', { nome : query.tabela.nome }) }}" data-url-remove-query="{{ path('query_remover', { id : query.id }) }}"
-                                        class="btn btn-danger pull-right btn-sm remove-query">Deletar
-                                </button>
-                                <a href="{{ path('query_editar', { id : query.id }) }}" class="btn pull-right btn-sm">Editar Query</a>
-                            </th>
+                            <th><a href="{{ path('query_execute', { id : query.id }) }}">{{ query.nome }}</a></th>
                         </tr>
                     {% else %}
                         <tr><td>Nenhuma Query vinculada com esta tabela</td></tr>

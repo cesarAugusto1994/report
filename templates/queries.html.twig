@@ -5,37 +5,38 @@
 
         <div class="panel panel-default">
 
-            <div class="panel-heading">Tabelas</div>
+            <div class="panel-heading">Queries</div>
 
             <div class="panel-body">
 
-                <a href="{{ path('query_adicionar') }}" class="btn btn-success btn-sm">Adicionar Busca</a>
+                <a href="{{ path('query_adicionar') }}" class="btn btn-success btn-sm">Adicionar</a>
 
-                <table class="table table-bordered table-responsive table-hover"
-                       data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
+                <table id="table"
+                       class="table table-bordered table-responsive table-hover"
+                       data-toggle="table"
+                       data-striped="true"
+                       data-search="true"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-pagination="true"
                        data-single-select="true"
                        data-maintain-selected="true"
                        data-show-pagination-switch="true"
                        data-sortable="true"
+                       data-show-export="true"
+                       data-click-to-select="true"
+                       data-flat="true"
+                       data-url="/api/queries"
+                       data-show-refresh="true"
+                       data-advanced-search="true"
+                       data-toolbar="#toolbar"
                 >
                     <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>RUN</th>
+                        <th data-field="nome" data-sortable="true">Nome</th>
+                        <th data-field="execute" data-sortable="true">Opções</th>
                     </tr>
                     </thead>
-
-                    <tbody>
-                    {% for query in queries %}
-                        <tr>
-                            <td><a href="{{ path('query_editar', { id : query.id }) }}">{{ query.nome }}</a></td>
-                            <td>
-                                <a class="btn btn-info btn-xs execute" href="{{ path('query_execute', { id : query.id }) }}">Executar</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
 
                 </table>
             </div>
