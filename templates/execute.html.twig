@@ -22,6 +22,14 @@
 
                     <form class="form-horizontal">
 
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Consulta:</label>
+                            <div class="col-sm-10">
+                                <h4>{{ query.nome }}</h4>
+                            </div>
+                        </div>
+
+
                         {% for keyp, parametro in parametros %}
 
                             <input type="hidden" id="{{ keyp }}-i">
@@ -35,6 +43,7 @@
                         {% endif %}
 
                         <button class="btn btn-primary btn-sm">Executar</button>
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#query">Ver Query</button>
                     </form>
 
                 </div>
@@ -119,6 +128,27 @@
 
         {% endif %}
 
+    </div>
+
+    <div class="modal fade" id="query" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Query</h4>
+                </div>
+
+                    <div class="modal-body">
+                        <pre>{{ query.query }}</pre>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="{{ path('query_editar', { id : query.id }) }}" class="btn btn-primary">Editar</a>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                    </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

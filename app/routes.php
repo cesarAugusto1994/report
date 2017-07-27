@@ -695,7 +695,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                                 $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
 
-                                $string = " SELECT {$cs->getNome()} FROM {$table->getNome()} WHERE {$field} = {$item}";
+                                $string = " SELECT {$cs->getNome()} FROM {$table->getSchema()}.{$table->getNome()} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
                             }
