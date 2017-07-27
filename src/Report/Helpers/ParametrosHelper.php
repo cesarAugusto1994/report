@@ -206,39 +206,44 @@ class ParametrosHelper
 
                     $nome = $index = $valor = null;
 
-                    if (!empty($colunaChavePrimaria)) {
-                        $index = current($colunaChavePrimaria)->getNome();
-                        if (isset($item[$index])) {
-                            $valor = $item[$index];
-                        }
-                    }
-
-                    if (!empty($colunaLabel)) {
-                        $label = current($colunaLabel)->getNome();
+                    if ($parametro->getColuna()) {
+                        $nome = $valor = $item[$parametro->getColuna()->getNome()];
                     } else {
-                        $label = $colunas[0]->getNome();
-                    }
 
-                    if (!isset($item[$index]) && !isset($item[$label])) {
-                        $nome = strtoupper($item[$parametro->getNome()]);
-                    } elseif (isset($item[$index]) && !isset($item[$label])) {
-                        $nome = strtoupper($item[$index]);
-                    } elseif (isset($item[$index]) && isset($item[$label])) {
-                        $nome = strtoupper($item[$index]);
-                    } elseif (!isset($item[$index]) && isset($item[$label])) {
-                        $nome = strtoupper($item[$label]);
-                    }
+                        if (!empty($colunaChavePrimaria)) {
+                            $index = current($colunaChavePrimaria)->getNome();
+                            if (isset($item[$index])) {
+                                $valor = $item[$index];
+                            }
+                        }
 
-                    if (empty($item[$parametro->getNome()]) && empty($valor)) {
-                        if (isset($item[$label])) {
-                            $valor = $item[$label];
+                        if (!empty($colunaLabel)) {
+                            $label = current($colunaLabel)->getNome();
+                        } else {
+                            $label = $colunas[0]->getNome();
+                        }
+
+                        if (!isset($item[$index]) && !isset($item[$label])) {
+                            $nome = strtoupper($item[$parametro->getNome()]);
+                        } elseif (isset($item[$index]) && !isset($item[$label])) {
+                            $nome = strtoupper($item[$index]);
+                        } elseif (isset($item[$index]) && isset($item[$label])) {
+                            $nome = strtoupper($item[$index]);
+                        } elseif (!isset($item[$index]) && isset($item[$label])) {
+                            $nome = strtoupper($item[$label]);
+                        }
+
+                        if (empty($item[$parametro->getNome()]) && empty($valor)) {
+                            if (isset($item[$label])) {
+                                $valor = $item[$label];
+                            }
+                        }
+
+                        if (!$valor) {
+                            $valor = $item[$parametro->getNome()];
                         }
                     }
-
-                    if (!$valor) {
-                        $valor = $item[$parametro->getNome()];
-                    }
-
+                    
                     $select .= '<option value="' . $valor . '"';
 
                     if (!empty($requestedValue)) {

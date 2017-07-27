@@ -357,7 +357,10 @@ $app->post('/query/save', function (Request $request) use ($app) {
                 $parametros[$item]['tipo'] = 'Data';
                 $newKey = strrpos($item, '-');
                 $parametros[$item]['valor'] = substr($item, 0, $newKey);
-                echo $parametros[$item]['valor'];
+            } elseif (strpos($item, 'Boolean') !== false) {
+                $parametros[$item]['tipo'] = 'Boolean';
+                $newKey = strrpos($item, '-');
+                $parametros[$item]['valor'] = substr($item, 0, $newKey);
             } elseif (strpos($item, 'Entity') !== false) {
 
                 $parametros[$item]['tipo'] = 'Entidade';
@@ -366,9 +369,20 @@ $app->post('/query/save', function (Request $request) use ($app) {
 
                 $parametros[$item]['valor'] = $valor;
 
-                $tabela = strstr($item, '%');
-                $newKey2 = strrpos($tabela, '%');
+                $coluna = $tabela = strstr($item, '%');
+                $newKey2 = strrpos($tabela, '|');
+
+                if (!$newKey2) {
+                    $newKey2 = strrpos($tabela, '%');
+                }
                 $nomeTabela = substr($tabela, 1, $newKey2 - 1);
+
+                $coluna = strstr($coluna, '|');
+                $newKey1 = strrpos($coluna, '%');
+                $nomeColuna = substr($coluna, 1, $newKey1 - 1);
+
+                $coluna = $app['columns.repository']->findOneBy(['nome' => $nomeColuna]);
+                $parametro->setColuna($coluna);
 
                 if (!$tabela) {
                     throw new Exception("É necessário informar a qual tabela a entidade está vinculada.");
@@ -393,6 +407,8 @@ $app->post('/query/save', function (Request $request) use ($app) {
             array_push($parametrosCadastrados, $parametro->getQueryParametro());
         }
     }
+
+    //exit;
 
     return $app->redirect('/queries');
 
