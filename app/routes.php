@@ -88,7 +88,8 @@ $app->get('/query/edit/{id}', function ($id) use ($app) {
         throw new Exception("Query não Encontrada");
     }
 
-    return $app['twig']->render('query-edit.html.twig', ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
+    return $app['twig']->render('query-edit.html.twig',
+        ['tables' => $tables, 'query' => $query, 'relatorios' => $relatorios]);
 
 })->bind('query_editar');
 
@@ -168,7 +169,9 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
             } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
                 $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
-            } elseif ($coluna->isChavePrimaria() || $coluna->isLabel() || $coluna->getTipo() == Colunas::DATA_TYPE_INT) {
+            } elseif ($coluna->isChavePrimaria() || $coluna->isLabel() || $coluna->getTipo() == Colunas::DATA_TYPE_INT || in_array($coluna->getFormato()->getNome(),
+                    [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO])
+            ) {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
             } else {
                 $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
@@ -692,7 +695,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
                                 $table = $app['tables.repository']->findOneBy(['nome' => $arrayColumns[$key]['tabelaNome']]);
 
-                                $string = " SELECT {$cs->getNome()} FROM {$table->getSchema()}.{$table->getNome()} WHERE {$field} = {$item}";
+                                $string = " SELECT {$cs->getNome()} FROM {$table->getNome()} WHERE {$field} = {$item}";
                                 $strColumn = $app['db']->fetchColumn($string);
                                 $retorno[$key]['label'] = $strColumn;
                             }

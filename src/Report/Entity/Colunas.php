@@ -15,6 +15,8 @@ class Colunas
     const TIPO_MESCLADO = 'MESCLADO';
     const TIPO_DATA = 'Data';
     const TIPO_DATA_HORA = 'Data e Hora';
+    const TIPO_BOOLEAN = 'Boolean';
+    const TIPO_BOLEAN_ATIVO_INATIVO = 'Boolean Ativo/Inativo';
 
     const DATA_TYPE_INT = 'int';
 

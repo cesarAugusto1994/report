@@ -8,33 +8,40 @@
 
             <div class="panel-body">
 
-                <table class="table table-bordered table-responsive table-hover"
-                       data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
+                <div id="toolbar">
+                    <select class="form-control">
+                        <option value="">Export Basic</option>
+                        <option value="all">Export All</option>
+                    </select>
+                </div>
+
+                <table id="table"
+                       class="table table-bordered table-responsive table-hover"
+                       data-toggle="table"
+                       data-striped="true"
+                       data-search="true"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-pagination="true"
                        data-single-select="true"
                        data-maintain-selected="true"
                        data-show-pagination-switch="true"
                        data-sortable="true"
+                       data-show-export="true"
+                       data-click-to-select="true"
+                       data-flat="true"
+                       data-url="/api/tabelas/from-grid"
+                       data-show-refresh="true"
+                       data-advanced-search="true"
+                       data-toolbar="#toolbar"
                 >
+
                     <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Banco</th>
+                        <th data-field="nome" data-sortable="true">Nome</th>
+                        <th data-field="banco" data-sortable="true">Banco</th>
                     </tr>
                     </thead>
-
-                    <tbody>
-                    {% for table in tables %}
-                        <tr>
-                            <td><a href="/tabela/{{ table.nome }}">{{ table.nomeFormatado }}</a></td>
-                            <td><a href="/tabela/{{ table.nome }}">{{ table.schema }}</a></td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td>Nenhuma Tabela Configurada</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
 
                 </table>
 
@@ -43,5 +50,20 @@
         </div>
 
     </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script>
+        var $table = $('#table');
+        $(function () {
+            $('#toolbar').find('select').change(function () {
+                $table.bootstrapTable('destroy').bootstrapTable({
+                    exportDataType: $(this).val()
+                });
+            });
+        })
+    </script>
 
 {% endblock %}

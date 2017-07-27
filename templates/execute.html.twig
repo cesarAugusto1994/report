@@ -56,37 +56,37 @@
 
             <div class="panel-body">
 
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
-                            data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="true">
-                        Exportar
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" class="export" data-type="excel">EXCEL</a></li>
-                        <li><a href="#" class="export" data-type="pdf">PDF</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#" class="export" data-type="json">JSON</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#" class="export" datatype="csv">CSV</a></li>
-                    </ul>
+                <div id="toolbar">
+                    <select id="export" class="form-control">
+                        <option value="">Export Basic</option>
+                        <option value="all">Export All</option>
+                    </select>
                 </div>
 
-
-                <table class="table table-bordered table-responsive table-hover"
-                       data-toggle="table" data-striped="true" data-search="true"
-                       data-show-toggle="true" data-show-columns="true" data-pagination="true"
+                <table id="table"
+                       class="table table-bordered table-responsive table-hover"
+                       data-toggle="table"
+                       data-striped="true"
+                       data-search="true"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-pagination="true"
                        data-single-select="true"
                        data-maintain-selected="true"
                        data-show-pagination-switch="true"
-                       data-sortable="true" id="tableExport">
+                       data-sortable="true"
+                       data-show-export="true"
+                       data-click-to-select="true"
+                       data-flat="true"
+                       data-show-refresh="true"
+                       data-advanced-search="true"
+                       data-toolbar="#toolbar">
 
                     {% if columns|length > 0 %}
                         <thead>
                         <tr>
                             {% for column in columns %}
-                                <th>{{ column }}</th>
+                                <th data-sortable="true">{{ column }}</th>
                             {% endfor %}
                         </tr>
                         </thead>
@@ -128,6 +128,15 @@
     <script>
 
         $(document).ready(function () {
+
+            var $table = $('#table');
+            $(function () {
+                $('#toolbar').find('select').change(function () {
+                    $table.bootstrapTable('destroy').bootstrapTable({
+                        exportDataType: $(this).val()
+                    });
+                });
+            });
 
             $('.input-daterange').datepicker({
                 todayBtn: true,
@@ -184,26 +193,6 @@
                 $("#parametros").val(paramns.toString());
                 view.val(v);
             });
-
-            $(".export").click(function () {
-
-                var separator;
-                var type = $(this).data('type');
-
-                if ('csv' === type) {
-                    separator = ",";
-                }
-
-                $('#tableExport').tableExport({
-                    separator: separator,
-                    tableName: '{% if query|length > 0 %}{{ query.nome }}{% endif %}',
-                    type: $(this).data('type'),
-                    escape: 'false',
-                    pdfFontSize: 11,
-                    pdfLeftMargin: 20,
-                    consoleLog: 'true'
-                });
-            })
 
         });
 

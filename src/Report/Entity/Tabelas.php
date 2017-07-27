@@ -108,5 +108,21 @@ class Tabelas
         return ucwords(str_replace('_', ' ', $this->nome));
     }
 
+    public function getLinkNome()
+    {
+        return "<a href='/tabela/".$this->nome."'>{$this->getNomeFormatado()}</a>";
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'nome' => $this->getLinkNome(),
+            'banco' => $this->schema,
+        ];
+    }
+
 }
 

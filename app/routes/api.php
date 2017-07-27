@@ -216,6 +216,19 @@ $api->get('/tabelas', function () use ($app) {
     return new JsonResponse($retorno);
 });
 
+$api->get('/tabelas/from-grid', function () use ($app) {
+
+    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($tables as $table) {
+        $retorno[] = $table->toArray();
+    }
+
+    return new JsonResponse($retorno);
+});
+
 $api->get('/formatos', function () use ($app) {
 
     $formatos = $app['formatos.repository']->findBy([], ['nome' => 'ASC']);

@@ -132,6 +132,10 @@ class ParametrosHelper
                             $pk = $label;
                         }
 
+                        if (is_numeric($item[$label])) {
+                            $pk = $label;
+                        }
+
                         if (empty($item[$parametro->getNome()])) {
                             if (isset($item[$pk])) {
                                 $valor = $item[$pk];
