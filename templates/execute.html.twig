@@ -18,10 +18,8 @@
 
                 <div class="panel-heading">Formulário</div>
 
-                <div class="panel-body">
-
-                    <form class="form-horizontal">
-
+                <form class="form-horizontal">
+                    <div class="panel-body">
                         {% if query is not empty %}
                             <div class="form-group">
                                 <label class="control-label col-sm-2">Consulta:</label>
@@ -42,16 +40,19 @@
                                 {{ p|raw }}
                             {% endfor %}
                         {% endif %}
-
-                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-flash"> </span>Executar</button>
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-flash"> </span>Executar
+                        </button>
                         {% if query is not empty %}
-                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#query">
+                            <button type="button" class="btn btn-warning btn-sm pull-right" data-toggle="modal"
+                                    data-target="#query">
                                 Ver Query
                             </button>
                         {% endif %}
-                    </form>
+                    </div>
+                </form>
 
-                </div>
             </div>
 
         {% endif %}
