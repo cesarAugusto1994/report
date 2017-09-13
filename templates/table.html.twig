@@ -38,8 +38,25 @@
 
                 <form action="/query/create" method="post" class="form-horizontal">
                     <input type="hidden" name="table" value="{{ table.id }}"/>
+
                     <div class="form-group">
-                        <label class="control-label col-sm-2">Selecionar:</label>
+                        <label class="control-label col-sm-2">CRUD:</label>
+                        <div class="col-sm-10">
+                            <select required class="selectpicker colunas"
+                                     show-tick="true" title="Nada Selecionado"
+                                     data-width="100%"
+                                    name="crud">
+
+                                    <option selected value="select">Selecionar</option>
+                                    <option value="update">Atualizar</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2">Colunas:</label>
                         <div class="col-sm-10">
                             <select required class="selectpicker colunas" multiple data-actions-box="true"
                                     data-selected-text-format="count" show-tick="true" title="Nada Selecionado"

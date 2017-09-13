@@ -4,11 +4,8 @@
     <div class="container">
 
         {% if log|length > 0 %}
-            <div class="alert alert-danger">
-                <p class="lead">{{ log }}</p>
-                {% if query is not empty %}
-                    <a class="btn btn-danger" href="/query/edit/{{ query.id }}">Corrigir Query</a>
-                {% endif %}
+            <div class="alert alert-{{ log.classe }}">
+                <p class="lead">{{ log.msg }}</p>
             </div>
         {% endif %}
 
@@ -22,7 +19,7 @@
                     <div class="panel-body">
                         {% if query is not empty %}
                             <div class="form-group">
-                                <label class="control-label col-sm-2">Consulta:</label>
+                                <label class="control-label col-sm-2">Query:</label>
                                 <div class="col-sm-10">
                                     <p class="lead">{{ query.nome }}</p>
                                 </div>
@@ -57,7 +54,7 @@
 
         {% endif %}
 
-        {% if result is defined %}
+        {% if result is not empty %}
 
             <div class="panel panel-default">
 

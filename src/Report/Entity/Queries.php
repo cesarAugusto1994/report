@@ -62,6 +62,12 @@ class Queries
     private $relatorio;
 
     /**
+     * @ORM\Column(name="tipo", type="text")
+     * @var string
+     */
+    private $tipo;
+
+    /**
      * @return int
      */
     public function getId()
@@ -147,6 +153,22 @@ class Queries
     public function setRelatorio($relatorio)
     {
         $this->relatorio = $relatorio;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTipo()
+    {
+        return $this->tipo;
+    }
+
+    /**
+     * @param string $tipo
+     */
+    public function setTipo($tipo)
+    {
+        $this->tipo = $tipo;
     }
 
     public function getLinkNome()

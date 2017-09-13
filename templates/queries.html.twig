@@ -3,6 +3,12 @@
 
     <div class="container">
 
+        {% if msg is defined %}
+            <div class="alert alert-info">
+                <p class="lead">{{ msg }}</p>
+            </div>
+        {% endif %}
+
         <div class="panel panel-default">
 
             <div class="panel-heading">Queries</div>

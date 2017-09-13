@@ -98,6 +98,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     $table = $nome = $request->request->get('table');
     $select = $nome = $request->request->get('select');
+    $crud = $nome = $request->request->get('crud');
     $inner = $nome = $request->request->get('inner');
     $where = $nome = $request->request->get('where');
     $groupBy = $nome = $request->request->get('groupBy');
@@ -115,51 +116,139 @@ $app->post('/query/create', function (Request $request) use ($app) {
         $arrayColumns[$column->getId()] = $column->getNome();
     }
 
-    $queryString = " SELECT ";
+    if ($crud == 'select') {
 
-    if (!empty($inner)) {
+        $queryString = " SELECT ";
 
-        $queryString .= " * ";
+        if (!empty($inner)) {
 
-    } elseif (count($select) == count($arrayColumns)) {
+            $queryString .= " * ";
 
-        $queryString .= $alias . ".* ";
+        } elseif (count($select) == count($arrayColumns)) {
 
-    } else {
+            $queryString .= $alias . ".* ";
+
+        } else {
+
+            foreach ($select as $item) {
+                $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
+            }
+
+            $queryString = substr($queryString, 0, -2);
+
+        }
+
+        $queryString .= " FROM {$table->getSchema()}.{$table->getNome()} {$alias}" . PHP_EOL;
+
+        if (!empty($inner)) {
+
+            foreach ($inner as $key => $item) {
+
+                $coluna = $app['columns.repository']->find($item);
+                $table = $app['tables.repository']->find($coluna->getTabela());
+
+                $queryString .= " INNER JOIN " . $table->getNome() . " " . $table->getNome(
+                    ) . " USING (" . $coluna->getNome() . ")" . PHP_EOL;
+            }
+
+        }
+
+        $queryString .= PHP_EOL;
+
+        if (!empty($where)) {
+
+            $stmt = " WHERE ";
+
+            if (1 == count($where)) {
+                $queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
+            }
+
+            foreach ($where as $key => $item) {
+
+                if (0 != $key && 1 < count($where)) {
+                    $stmt = " AND ";
+                }
+
+                $valor = $arrayColumns[$item];
+
+                if (is_array($valor)) {
+                    $valor = implode(',', $arrayColumns[$item]);
+                }
+
+                /**
+                 * @var Colunas $coluna
+                 */
+                $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
+
+                $isInteiro = false;
+
+                if ($coluna->getTabelaRef()) {
+                    /**
+                     * @var Colunas $colunaRef
+                     */
+                    $colunaRef = $app['columns.repository']->findOneBy(
+                        ['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]
+                    );
+                    if ($colunaRef) {
+                        $isInteiro = true;
+                    }
+                }
+
+                if ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
+                    $queryString .= " {$stmt} " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
+                } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
+                    $queryString .= " {$stmt} " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
+                } elseif ($isInteiro ||
+                    $coluna->isChavePrimaria() ||
+                    $coluna->isLabel() && !is_numeric($valor) ||
+                    $coluna->getTipo() == Colunas::DATA_TYPE_INT ||
+                    $coluna->getFormato() && in_array(
+                        $coluna->getFormato()->getNome(),
+                        [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO]
+                    )
+                ) {
+                    $queryString .= " {$stmt}  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
+                } else {
+                    $queryString .= " {$stmt}  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
+                }
+
+            }
+
+        }
+
+        if (!empty($groupBy)) {
+
+            $queryString .= " GROUP BY ";
+
+            foreach ($groupBy as $item) {
+                $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
+            }
+
+            $queryString = substr($queryString, 0, -2) . PHP_EOL;
+        }
+
+        if (!empty($orderBy)) {
+
+            $queryString .= " ORDER BY ";
+
+            foreach ($orderBy as $item) {
+                $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
+            }
+
+            $queryString = substr($queryString, 0, -2) . PHP_EOL;
+
+        }
+
+        if (!empty($limit)) {
+            $queryString .= " LIMIT " . $limit;
+        }
+
+    }
+    else {
+
+        $queryString = " UPDATE {$table->getSchema()}.{$table->getNome()} SET ";
 
         foreach ($select as $item) {
-            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
-        }
-
-        $queryString = substr($queryString, 0, -2);
-
-    }
-
-    $queryString .= " FROM {$table->getSchema()}.{$table->getNome()} {$alias}" . PHP_EOL;
-
-    if (!empty($inner)) {
-
-        foreach ($inner as $key => $item) {
-
-            $coluna = $app['columns.repository']->find($item);
-            $table = $app['tables.repository']->find($coluna->getTabela());
-
-            $queryString .= " INNER JOIN " . $table->getNome() . " " . $table->getNome() . " USING (" . $coluna->getNome() . ")" . PHP_EOL;
-        }
-
-    }
-
-    if (!empty($where)) {
-
-        $queryString .= " WHERE 1 = 1 " . PHP_EOL;
-
-        foreach ($where as $key => $item) {
-
-            $valor = $arrayColumns[$item];
-
-            if (is_array($valor)) {
-                $valor = implode(',', $arrayColumns[$item]);
-            }
 
             /**
              * @var Colunas $coluna
@@ -172,56 +261,80 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 /**
                  * @var Colunas $colunaRef
                  */
-                $colunaRef = $app['columns.repository']->findOneBy(['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]);
+                $colunaRef = $app['columns.repository']->findOneBy(
+                    ['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]
+                );
                 if ($colunaRef) {
                     $isInteiro = true;
                 }
             }
 
-            if ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
-                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
-            } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
-                $queryString .= " AND " . $alias . '.' . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
-            } elseif ($isInteiro||
-                $coluna->isChavePrimaria() ||
-                $coluna->isLabel() && !is_numeric($valor) ||
-                $coluna->getTipo() == Colunas::DATA_TYPE_INT || 
-                $coluna->getFormato() && in_array($coluna->getFormato()->getNome(), [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO])
-            ) {
-                $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
-            } else {
-                $queryString .= " AND  {$alias}.{$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
+            $queryString .=  "{$arrayColumns[$item]} = :{$arrayColumns[$item]}:, ";
+        }
+
+        $queryString = substr($queryString, 0, -2);
+
+        if (!empty($where)) {
+
+            $stmt = " WHERE ";
+
+            if (1 < count($where)) {
+                $queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
+            }
+
+            foreach ($where as $key => $item) {
+
+                if (0 != $key && 1 < count($where)) {
+                    $stmt = " AND ";
+                }
+
+                $valor = $arrayColumns[$item];
+
+                if (is_array($valor)) {
+                    $valor = implode(',', $arrayColumns[$item]);
+                }
+
+                /**
+                 * @var Colunas $coluna
+                 */
+                $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
+
+                $isInteiro = false;
+
+                if ($coluna->getTabelaRef()) {
+                    /**
+                     * @var Colunas $colunaRef
+                     */
+                    $colunaRef = $app['columns.repository']->findOneBy(
+                        ['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]
+                    );
+                    if ($colunaRef) {
+                        $isInteiro = true;
+                    }
+                }
+
+                if ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA_HORA) {
+                    $queryString .= " {$stmt} " . $arrayColumns[$item] . " BETWEEN ':{$valor}: 00:00:00' AND ':{$valor}: 23:59:59 '" . PHP_EOL;
+                } elseif ($coluna->getFormato() && $coluna->getFormato()->getNome() == Colunas::TIPO_DATA) {
+                    $queryString .= " {$stmt} " . $arrayColumns[$item] . " BETWEEN ':{$valor}:' AND ':{$valor}:'" . PHP_EOL;
+                } elseif ($isInteiro ||
+                    $coluna->isChavePrimaria() ||
+                    $coluna->isLabel() && !is_numeric($valor) ||
+                    $coluna->getTipo() == Colunas::DATA_TYPE_INT ||
+                    $coluna->getFormato() && in_array(
+                        $coluna->getFormato()->getNome(),
+                        [Colunas::TIPO_BOOLEAN, Colunas::TIPO_BOLEAN_ATIVO_INATIVO]
+                    )
+                ) {
+                    $queryString .= " {$stmt}  {$arrayColumns[$item]} IN (:{$valor}:)" . PHP_EOL;
+                } else {
+                    $queryString .= " {$stmt}  {$arrayColumns[$item]} IN (':" . $valor . ":')" . PHP_EOL;
+                }
+
             }
 
         }
 
-    }
-
-    if (!empty($groupBy)) {
-
-        $queryString .= " GROUP BY ";
-
-        foreach ($groupBy as $item) {
-            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
-        }
-
-        $queryString = substr($queryString, 0, -2) . PHP_EOL;
-    }
-
-    if (!empty($orderBy)) {
-
-        $queryString .= " ORDER BY ";
-
-        foreach ($orderBy as $item) {
-            $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
-        }
-
-        $queryString = substr($queryString, 0, -2) . PHP_EOL;
-
-    }
-
-    if (!empty($limit)) {
-        $queryString .= " LIMIT " . $limit;
     }
 
     $nome = $table->getNomeFormatado() . '_v' . date('dmYHis');
@@ -230,9 +343,70 @@ $app->post('/query/create', function (Request $request) use ($app) {
     $query->setNome($nome);
     $query->setTabela($table);
     $query->setQuery($queryString);
+    $query->setTipo($crud);
     $query->setQueryString(false);
 
     $app['queries.repository']->save($query);
+
+    if ($crud == 'update') {
+
+        if (!empty($select)) {
+
+        foreach ($select as $key => $item) {
+
+            $tipo = 'texto';
+
+            $parametro = new Parametros();
+            $parametro->setNome($arrayColumns[$item]);
+
+            $cols = array_map(function ($col) {
+                return $col->toArray();
+            }, $columns);
+
+            if ($cols) {
+                $array = array_filter($cols, function ($col) use ($arrayColumns, $item) {
+                    return $col['nome'] == $arrayColumns[$item];
+                });
+
+                if ($array) {
+                    $array = current($array);
+                }
+
+                $col = $app['columns.repository']->find($array['id']);
+                $parametro->setColuna($col);
+
+                if ($array['chavePrimaria'] == true) {
+                    $tipo = 'Entidade';
+                    /**
+                     * @var Tabelas $tabela
+                     */
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
+                } elseif (!empty($array['tabelaRef'])) {
+                    $tipo = 'Entidade';
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabelaRef']]);
+                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
+                } elseif (!empty($array['formato']) && $array['formato'] == Formatos::TIPO_ENUM) {
+                    $tipo = 'Entidade';
+                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    $parametro->setQueryString("SELECT DISTINCT {$arrayColumns[$item]} FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    $parametro->setTabela($tabela);
+                } elseif (!empty($array['formato'])) {
+                    $tipo = $array['formato'];
+                }
+            }
+
+            $parametro->setTipo($tipo);
+            $parametro->setQuery($query);
+            $parametro->setQueryParametro($arrayColumns[$item]);
+
+            $app['parametros.repository']->save($parametro);
+        }
+    }
+
+    }
 
     if (!empty($where)) {
 
@@ -321,6 +495,16 @@ $app->post('/query/save', function (Request $request) use ($app) {
     $query->setTabela($table);
     $query->setQuery($queryString);
     $query->setQueryString(true);
+
+    $tipo = 'select';
+
+    preg_match('/^update|UPDATE$/', $queryString, $found);
+
+    if (!empty($found)) {
+        $tipo = 'update';
+    }
+
+    $query->setTipo($tipo);
     $app['queries.repository']->save($query);
 
     $string = $queryString;
@@ -390,12 +574,13 @@ $app->post('/query/save', function (Request $request) use ($app) {
 
                 $tabela = $app['tables.repository']->findOneBy(['nome' => $nomeTabela]);
 
-                if (!$tabela) {
-                    throw new Exception("tabela não encontrada.");
+                $select = null;
+
+                if ($tabela) {
+                    $parametro->setTabela($tabela);
+                    $select = "SELECT * FROM {$nomeTabela}";
                 }
 
-                $parametro->setTabela($tabela);
-                $select = "SELECT * FROM {$nomeTabela}";
                 $parametro->setQueryString($select);
             }
 
@@ -473,6 +658,9 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     }
 
+    /**
+     * @var Query $query
+     */
     $query = $app['queries.repository']->find($id);
 
     if (!$query) {
@@ -512,7 +700,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     if ($pR) {
 
-        $parametrosE = $app['parametros.repository']->findBy(['query' => $pR['query']]);
+        $parametrosE = $app['parametros.repository']->findBy(['query' => $query]);
 
         $arrParametros = [];
 
@@ -568,35 +756,37 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
         try {
             $result = $app['db']->fetchAll($string);
         } catch (Exception $e) {
-            $log = $e->getMessage();
+            $log = ['classe' => 'danger', 'msg' => $e->getMessage()];
         }
 
-        if ($query->isQueryString()) {
+        if ($query->getTipo() == 'select') {
 
-            if ($result) {
+            if ($query->isQueryString()) {
 
-                $colunas = array_keys(current($result));
+                if ($result) {
 
-                $colunas = array_map(function ($coluna) {
-                    return ucwords(str_replace('_', ' ', $coluna));
-                }, $colunas);
+                    $colunas = array_keys(current($result));
 
+                    $colunas = array_map(function ($coluna) {
+                        return ucwords(str_replace('_', ' ', $coluna));
+                    }, $colunas);
+
+                }
+
+                return $app['twig']->render('execute.html.twig',
+                    [
+                        'result' => $result,
+                        'columns' => $colunas,
+                        'log' => $log,
+                        'query' => $query,
+                        'parametros' => null,
+                        'parametrosR' => $parametrosR,
+                        'params' => $pR,
+                        'table' => $query->getTabela(),
+                    ]);
             }
 
-            return $app['twig']->render('execute.html.twig',
-                [
-                    'result' => $result,
-                    'columns' => $colunas,
-                    'log' => $log,
-                    'query' => $query,
-                    'parametros' => null,
-                    'parametrosR' => $parametrosR,
-                    'params' => $pR,
-                    'table' => $query->getTabela(),
-                ]);
-        }
-
-        if ($result) {
+            if ($result) {
 
             $arrayColumns = [];
 
@@ -761,6 +951,10 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
                 return ucwords(str_replace('_', ' ', $coluna));
             }, $colunas);
 
+        }
+
+        } else {
+            $log = ['classe' => 'success', 'msg' => 'A Atualização foi executada com Sucesso'];
         }
     }
 
