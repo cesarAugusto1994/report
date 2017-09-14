@@ -186,7 +186,7 @@ class ParametrosHelper
                     $retorno[] = $select;
 
                 }
-                elseif ($parametro->getTipo() == Parametros::TIPO_ENTIDADE) {echo $parametro->getNome();
+                elseif ($parametro->getTipo() == Parametros::TIPO_ENTIDADE) {
 
                     $query = $parametro->getQueryString();
 

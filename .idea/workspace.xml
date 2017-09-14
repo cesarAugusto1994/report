@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fa8bc757-59b1-4281-86ad-edeaac5423e5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/routes.php" afterPath="$PROJECT_DIR$/app/routes.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php" afterPath="$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/relatorio.html.twig" afterPath="$PROJECT_DIR$/templates/relatorio.html.twig" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -35,7 +33,39 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ParametrosHelper.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="188" column="77" lean-forward="false" selection-start-line="188" selection-start-column="77" selection-end-line="188" selection-end-column="77" />
+              <folding>
+                <element signature="e#1665#11127#0#PHP" expanded="false" />
+                <marker date="1505400504350" expanded="true" signature="2927:3425" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="3132:3425" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="3269:3425" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="6982:7480" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="7187:7480" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="7324:7480" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="12084:12200" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="12084:12552" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="12285:12552" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="12422:12552" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="14050:14872" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="14251:14827" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="14353:14780" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="14928:15389" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="15129:15344" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="15512:16012" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="15751:15967" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="16112:16567" ph="..." />
+                <marker date="1505400504350" expanded="true" signature="16318:16522" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -146,8 +176,8 @@
         <option value="$PROJECT_DIR$/src/Report/Entity/Parametros.php" />
         <option value="$PROJECT_DIR$/templates/relatorio.html.twig" />
         <option value="$PROJECT_DIR$/app/routes.php" />
-        <option value="$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a159b31e-7398-4fae-b92e-389a5ed8d51d/console.sql" />
+        <option value="$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php" />
       </list>
     </option>
   </component>
@@ -404,18 +434,19 @@
       <workItem from="1504292409851" duration="1166000" />
       <workItem from="1505309385630" duration="8464000" />
       <workItem from="1505323008434" duration="11203000" />
-      <workItem from="1505391599784" duration="8764000" />
+      <workItem from="1505391599784" duration="8824000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="303964000" />
+    <option name="totallyTimeSpent" value="304024000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1366" height="723" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2456446" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15075758" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15075758" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17045455" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -804,40 +835,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-750">
-          <caret line="318" column="125" lean-forward="false" selection-start-line="318" selection-start-column="125" selection-end-line="318" selection-end-column="125" />
-          <folding>
-            <element signature="e#1665#11154#0#PHP" expanded="false" />
-            <element signature="e#6745#10967#0#PHP" expanded="false" />
-            <marker date="1505400280128" expanded="true" signature="2927:3425" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="3132:3425" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="3269:3425" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="7009:7507" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="7214:7507" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="7351:7507" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="12111:12227" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="12111:12579" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="12312:12579" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="12449:12579" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="14077:14899" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="14278:14854" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="14380:14807" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="14955:15416" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="15156:15371" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="15539:16039" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="15778:15994" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="16139:16594" ph="..." />
-            <marker date="1505400280128" expanded="true" signature="16345:16549" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="das://table:/77bd0ec5/a159b31e-7398-4fae-b92e-389a5ed8d51d/relatorio.relatorios">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="188" column="77" lean-forward="false" selection-start-line="188" selection-start-column="77" selection-end-line="188" selection-end-column="77" />
+          <folding>
+            <element signature="e#1665#11127#0#PHP" expanded="false" />
+            <marker date="1505400504350" expanded="true" signature="2927:3425" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="3132:3425" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="3269:3425" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="6982:7480" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="7187:7480" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="7324:7480" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="12084:12200" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="12084:12552" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="12285:12552" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="12422:12552" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="14050:14872" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="14251:14827" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="14353:14780" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="14928:15389" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="15129:15344" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="15512:16012" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="15751:15967" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="16112:16567" ph="..." />
+            <marker date="1505400504350" expanded="true" signature="16318:16522" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
