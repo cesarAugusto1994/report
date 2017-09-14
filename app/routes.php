@@ -472,6 +472,7 @@ $app->post('/query/save', function (Request $request) use ($app) {
 
     $nome = $request->request->get('nome');
     $tabela = $request->request->get('tabela');
+    $relatorio = $request->request->get('relatorio');
     $queryString = $request->request->get('query');
 
     $table = null;
@@ -490,9 +491,14 @@ $app->post('/query/save', function (Request $request) use ($app) {
         $table = $app['tables.repository']->find($tabela);
     }
 
+    if (!empty($relatorio)) {
+        $relatorio = $app['relatorios.repository']->find($relatorio);
+    }
+
     $query = new Queries();
     $query->setNome($nome);
     $query->setTabela($table);
+    $query->setRelatorio($relatorio);
     $query->setQuery($queryString);
     $query->setQueryString(true);
 

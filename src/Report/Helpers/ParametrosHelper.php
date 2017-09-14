@@ -316,7 +316,7 @@ class ParametrosHelper
             case Formatos::TIPO_BOOLEAN :
             case Formatos::TIPO_BOOLEAN_ATIVO_INATIVO :
                 $select = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nome . ':</label>
                                         <div class="col-sm-10">
                                         <select class="selectpicker" required title="Nada Selecionado" multiple data-actions-box="true"
                                         data-width="100%" id="' . $parametro->getNome() . '" name=' . $parametro->getNome() . '[]>';
