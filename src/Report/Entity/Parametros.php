@@ -20,6 +20,7 @@ class Parametros
 {
 
     const TIPO_ENTIDADE = 'Entidade';
+    const TIPO_TEXTO = 'text';
 
     /**
      * @ORM\Id()

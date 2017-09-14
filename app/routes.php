@@ -354,7 +354,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
         foreach ($select as $key => $item) {
 
-            $tipo = 'texto';
+            $tipo = 'text';
 
             $parametro = new Parametros();
             $parametro->setNome($arrayColumns[$item]);

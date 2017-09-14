@@ -54,14 +54,13 @@ class ParametrosHelper
 
             $nomeItem = $parametro->getColuna() ? $parametro->getColuna()->getNomeFormatado() : $parametro->getNome();
 
+            $requestedValue = $this->request->query->all();
+
             if ($parametro->getColuna()) {
 
                 if ($parametro->getColuna()->isChavePrimaria() || $parametro->getColuna()->getFormato()) {
-                    $retorno[] = $this->renderInput($parametro, $nomeItem);
+                    $retorno[] = $this->renderInput($parametro, $nomeItem, $requestedValue);
                 }
-
-                $requestedValue = $this->request->query->all();
-
 
                 if ($tabela) {
 
@@ -187,7 +186,7 @@ class ParametrosHelper
                     $retorno[] = $select;
 
                 }
-                elseif ($parametro->getTipo() == Parametros::TIPO_ENTIDADE) {
+                elseif ($parametro->getTipo() == Parametros::TIPO_ENTIDADE) {echo $parametro->getNome();
 
                     $query = $parametro->getQueryString();
 
@@ -280,10 +279,13 @@ class ParametrosHelper
 
                 }
 
+                elseif ($parametro->getTipo() == Parametros::TIPO_TEXTO) {
+                    $retorno[] = $this->renderInput($parametro, $nomeItem, $requestedValue);
+                }
+
             }
             else {
-
-                $retorno[] = $this->renderInput($parametro, $nomeItem);
+                $retorno[] = $this->renderInput($parametro, $nomeItem, $requestedValue);
 
             }
 
@@ -292,7 +294,7 @@ class ParametrosHelper
         return $retorno;
     }
 
-    public function renderInput($parametro, $nomeItem)
+    public function renderInput($parametro, $nomeItem, $requestedValue = null)
     {
         $formato = $request = null;
         $retorno = [];
@@ -306,6 +308,8 @@ class ParametrosHelper
         if (!empty($requestedValue)) {
             $request = $requestedValue[$parametro->getNome()];
         }
+
+        $nome = $parametro->getColuna() ? $parametro->getColuna()->getNomeFormatado() : $parametro->getNome();
 
         switch ($formato) {
 
@@ -364,7 +368,7 @@ class ParametrosHelper
             case Formatos::TIPO_DATA :
 
                 $todo = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nome . ':</label>
                                         <div class="col-sm-10">
                                             <div class="input-daterange input-group" id="datepicker">
                                                 <input type="text" class="input-sm form-control" name="' . $parametro->getNome() . '-inicio" />
@@ -375,7 +379,7 @@ class ParametrosHelper
                                       </div>';
 
                 $retorno = '<div class="form-group">
-                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $parametro->getColuna()->getNomeFormatado() . ':</label>
+                                        <label class="control-label col-sm-2" for="' . $parametro->getNome() . '">' . $nome . ':</label>
                                         <div class="col-sm-10">
                                             <input type="text" required class="form-control datepicker" name="' . $parametro->getNome() . '" value="' . $request . '"/>
                                         </div>
