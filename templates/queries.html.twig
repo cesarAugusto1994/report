@@ -52,4 +52,58 @@
 
 {% endblock %}
 
+{% block js %}
+
+    <script>
+
+        $(document).ready(function () {
+
+            $(".remove-query").click(function (e) {
+
+                var self = $(this).data('id');
+                var url = '/query/'+self+'/remove';
+
+                e.preventDefault();
+
+                swal({
+                    title: 'Atenção',
+                    text: "Deseja mesmo deletar esta query?",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Cancelar'
+                }).then(function () {
+
+                    jQuery.post({
+                        type: "POST",
+                        url: url,
+                    }).done(function () {
+
+                        swal(
+                            'Sucesso!',
+                            'A query foi deletada!',
+                            'success'
+                        ).then(
+                            function () {
+                                self.parent.parent.hide();
+                            })
+
+                    })
+                        .fail(function () {
+                            swal(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                        })
+                })
+            })
+
+        });
+
+    </script>
+
+{% endblock %}
 

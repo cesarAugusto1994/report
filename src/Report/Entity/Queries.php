@@ -178,14 +178,24 @@ class Queries
 
     public function getLinkExecute()
     {
-        return "<a class=\"btn btn-info btn-xs execute\" href=\"/execute/{$this->id}\">Executar</a>";
+        return "<a class=\"btn btn-success btn-xs execute\" href=\"/execute/{$this->id}\">RUN ></a>   ";
+    }
+
+    public function getLinkDelete()
+    {
+        return "<a class='remove-query btn btn-danger btn-xs' href='/query/{$this->id}/remove' data-id='{$this->id}'>Remover</a>";
+    }
+
+    public function getBtnsOpcoes()
+    {
+        return $this->getLinkExecute() . $this->getLinkDelete();
     }
 
     public function toArray()
     {
         return [
             'nome' => $this->getLinkNome(),
-            'execute' => $this->getLinkExecute()
+            'execute' => $this->getBtnsOpcoes(),
         ];
     }
 }

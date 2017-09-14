@@ -60,9 +60,7 @@ class ParametrosHelper
 
                 if ($parametro->getColuna()->isChavePrimaria() || $parametro->getColuna()->getFormato()) {
                     $retorno[] = $this->renderInput($parametro, $nomeItem, $requestedValue);
-                }
-
-                if ($tabela) {
+                } else if ($tabela) {
 
                     $existeColuna = $app['columns.repository']->findBy([
                         'tabela' => $tabela->getNome(),

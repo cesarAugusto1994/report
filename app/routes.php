@@ -131,11 +131,12 @@ $app->post('/query/create', function (Request $request) use ($app) {
         } else {
 
             foreach ($select as $item) {
-                $queryString .= $alias . '.' . $arrayColumns[$item] . ', ';
+                $queryString .= $alias . '.' . $arrayColumns[$item] . ', ' . PHP_EOL;
             }
 
-            $queryString = substr($queryString, 0, -2);
+            $queryString = substr($queryString, 0, -3);
 
+            $queryString .= PHP_EOL;
         }
 
         $queryString .= " FROM {$table->getSchema()}.{$table->getNome()} {$alias}" . PHP_EOL;
@@ -159,13 +160,13 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
             $stmt = " WHERE ";
 
-            if (1 == count($where)) {
+            if (count($where) > 1) {
                 $queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
             }
 
             foreach ($where as $key => $item) {
 
-                if (0 != $key && 1 < count($where)) {
+                if (0 == $key && 1 < count($where)) {
                     $stmt = " AND ";
                 }
 
@@ -278,13 +279,13 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
             $stmt = " WHERE ";
 
-            if (1 < count($where)) {
+            if (1 == count($where)) {
                 $queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
             }
 
             foreach ($where as $key => $item) {
 
-                if (0 != $key && 1 < count($where)) {
+                if (0 < $key && 1 < count($where)) {
                     $stmt = " AND ";
                 }
 
@@ -376,13 +377,13 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $parametro->setColuna($col);
 
                 if ($array['chavePrimaria'] == true) {
-                    $tipo = 'Entidade';
+                    $tipo = 'text';
                     /**
                      * @var Tabelas $tabela
                      */
-                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
-                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
-                    $parametro->setTabela($tabela);
+                    //$tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    //$parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    //$parametro->setTabela($tabela);
                 } elseif (!empty($array['tabelaRef'])) {
                     $tipo = 'Entidade';
                     $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabelaRef']]);
@@ -412,7 +413,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
         foreach ($where as $key => $item) {
 
-            $tipo = 'texto';
+            $tipo = 'text';
 
             $parametro = new Parametros();
             $parametro->setNome($arrayColumns[$item]);
@@ -434,13 +435,13 @@ $app->post('/query/create', function (Request $request) use ($app) {
                 $parametro->setColuna($col);
 
                 if ($array['chavePrimaria'] == true) {
-                    $tipo = 'Entidade';
+                    $tipo = 'text';
                     /**
                      * @var Tabelas $tabela
                      */
-                    $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
-                    $parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
-                    $parametro->setTabela($tabela);
+                    //$tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabela']]);
+                    //$parametro->setQueryString("SELECT * FROM {$tabela->getSchema()}.{$tabela->getNome()}");
+                    //$parametro->setTabela($tabela);
                 } elseif (!empty($array['tabelaRef'])) {
                     $tipo = 'Entidade';
                     $tabela = $app['tables.repository']->findOneBy(['nome' => $array['tabelaRef']]);
@@ -605,7 +606,7 @@ $app->post('/query/save', function (Request $request) use ($app) {
 
 })->bind('query_salvar');
 
-$app->post('/query/{id}/remove', function ($id) use ($app) {
+$app->match('/query/{id}/remove', function ($id) use ($app) {
 
     $query = $app['queries.repository']->find($id);
 
