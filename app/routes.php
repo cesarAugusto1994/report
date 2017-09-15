@@ -44,10 +44,32 @@ $app->get('/tables', function () use ($app) {
 
 })->bind('tabelas');
 
+$app->post('/tabela/add', function (Request $request) use ($app) {
+
+    $nome = $request->request->get('nome');
+    $schema = $request->request->get('schema');
+
+    $tables = $app['tables.repository']->findOneBy(['nome' => $nome, 'schema' => $schema]);
+
+    if (!empty($tables)) {
+        throw new Exception("Tabela já existe para esse Banco de Dados.");
+    }
+
+    $tabela = new Tabelas();
+    $tabela->setNome($nome);
+    $tabela->setSchema($schema);
+    $tabela->setAtivo(true);
+
+    $app['tables.repository']->save($tabela);
+
+    return $app->redirect('/tabela/' . $tabela->getNome());
+
+})->bind('tabela_adicionar');
+
 $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
     /**
-     * @var EntityManager $query
+     * @var Tabelas $table
      */
     $table = $app['tables.repository']->findOneBy(['nome' => $nome]);
     $columns = $app['columns.repository']->findBy(['tabela' => $table]);
@@ -58,6 +80,20 @@ $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
     $tablesUnion = array_filter($tablesUnion, function ($item) use ($table) {
         return $item !== $table;
     });
+
+    $update = false;
+
+    if (empty($table->getUpdatedAt()) || (!empty($table->getUpdatedAt()) && $table->getUpdatedAt()->diff(new DateTime('now'))->days > 2)) {
+        $update = true;
+    }
+
+    if ($update) {
+        $result = $app['db']->fetchColumn("SELECT COUNT(*) FROM {$table->getSchema()}.{$table->getNome()}");
+        $table->setUpdatedAt(new DateTime('now'));
+        $table->setRows((int)$result);
+        $app['tables.repository']->save($table);
+    }
+
 
     $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
 
@@ -773,6 +809,8 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             $result = $app['db']->fetchAll($string);
 
             $run = new Run($query);
+            $run->setParameters($request->getQueryString());
+            $run->setRowsReturned(count($result));
             $app['run.repository']->save($run);
 
         } catch (Exception $e) {

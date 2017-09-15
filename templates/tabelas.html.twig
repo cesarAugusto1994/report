@@ -8,6 +8,8 @@
 
             <div class="panel-body">
 
+                <a class="btn btn-link btn-xs" data-toggle="modal" data-target="#tabela">Nova Tabela</a>
+
                 <div id="toolbar">
                     <select class="form-control">
                         <option value="">Export Basic</option>
@@ -39,6 +41,7 @@
                     <thead>
                     <tr>
                         <th data-field="nome" data-sortable="true">Nome</th>
+                        <th data-field="rows" data-sortable="true">Registros</th>
                         <th data-field="banco" data-sortable="true">Banco</th>
                     </tr>
                     </thead>
@@ -50,6 +53,38 @@
         </div>
 
     </div>
+
+
+    <div class="modal fade" id="tabela" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Adicionar Tabela</h4>
+                </div>
+                <form class="form-horizontal" action="{{ path('tabela_adicionar') }}" method="post">
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="nome_relatorio">Nome:</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nome_relatorio" id="nome_relatorio" required
+                                       class="form-control" autofocus/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}
 

@@ -37,6 +37,20 @@ class Run
     private $runAt;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="parameters", type="string")
+     */
+    private $parameters;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="rows_returned", type="integer")
+     */
+    private $rowsReturned;
+
+    /**
      * Run constructor.
      * @param Queries $query
      */
@@ -84,6 +98,38 @@ class Run
     public function setRunAt($runAt)
     {
         $this->runAt = $runAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * @param string $parameters
+     */
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRowsReturned()
+    {
+        return $this->rowsReturned;
+    }
+
+    /**
+     * @param int $rowsReturned
+     */
+    public function setRowsReturned($rowsReturned)
+    {
+        $this->rowsReturned = $rowsReturned;
     }
 }
 

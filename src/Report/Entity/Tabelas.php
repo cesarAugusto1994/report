@@ -53,6 +53,42 @@ class Tabelas
     private $relatorio;
 
     /**
+     * @ORM\Column(name="updated_at", type="datetime")
+     * @var \DateTime
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\Column(name="rows", type="integer")
+     * @var integer
+     */
+    private $rows;
+
+    /**
+     * @param string $nome
+     */
+    public function setNome($nome)
+    {
+        $this->nome = $nome;
+    }
+
+    /**
+     * @param bool $ativo
+     */
+    public function setAtivo($ativo)
+    {
+        $this->ativo = $ativo;
+    }
+
+    /**
+     * @param string $schema
+     */
+    public function setSchema($schema)
+    {
+        $this->schema = $schema;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -101,6 +137,38 @@ class Tabelas
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \DateTime $updatedAt
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRows()
+    {
+        return $this->rows;
+    }
+
+    /**
+     * @param int $rows
+     */
+    public function setRows($rows)
+    {
+        $this->rows = $rows;
+    }
+
+    /**
      * @return mixed|string
      */
     public function getNomeFormatado()
@@ -121,6 +189,7 @@ class Tabelas
         return [
             'nome' => $this->getLinkNome(),
             'banco' => $this->schema,
+            'rows' => $this->rows
         ];
     }
 
