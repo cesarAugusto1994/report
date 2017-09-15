@@ -12,6 +12,7 @@ use Report\Entity\Formatos;
 use Report\Entity\Parametros;
 use Report\Entity\Queries;
 use Report\Entity\Tabelas;
+use Report\Entity\Run;
 use Report\Helpers\ParametrosHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,14 @@ $app->get('/', function () use ($app) {
     return $app['twig']->render('index.html.twig', ['relatorios' => $relatorios]);
 
 })->bind('home');
+
+$app->get('/log', function () use ($app) {
+
+    $relatorios = $app['run.repository']->findBy([], ['runAt' => 'DESC']);
+
+    return $app['twig']->render('log.html.twig', ['logs' => $relatorios]);
+
+})->bind('log');
 
 $app->get('/tables', function () use ($app) {
 
@@ -651,7 +660,7 @@ $app->post('/query/edit/save', function (Request $request) use ($app) {
 $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
     if (!$id) {
-        throw new InvalidArgumentException("FATAL ERROR", JsonResponse::HTTP_BAD_REQUEST);
+        throw new Exception("A query não foi encontrada.", JsonResponse::HTTP_BAD_REQUEST);
     }
 
     $paramsFromRequest = $request->query->all();
@@ -762,6 +771,10 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
 
         try {
             $result = $app['db']->fetchAll($string);
+
+            $run = new Run($query);
+            $app['run.repository']->save($run);
+
         } catch (Exception $e) {
             $log = ['classe' => 'danger', 'msg' => $e->getMessage()];
         }
@@ -1256,5 +1269,29 @@ $app->post('tabela/{id}/mesclar-colunas', function ($id, Request $request) use (
     return $app->redirect('/');
 
 })->bind('mesclar_colunas');
+
+$app->error(function (\Exception $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+    switch ($code) {
+        case 400 :
+            $message = 'Ocorreu um erro na m&aacute;quina local.';
+            break;
+        case 403 :
+            $message = 'Acesso negado, Você não tem permissão para acessar esta página.';
+            break;
+        case 404 :
+            $message = 'Página não encontrada.';
+            break;
+        case 500 :
+            $message = 'Um erro ocorreu no servidor.';
+            break;
+        case 504 :
+            $message = 'Erro interno no servidor.';
+            break;
+        default :
+            $message = 'Um erro ocorreu.';
+            break;
+    }
+    return $app['twig']->render('errors/error.html.twig', ['code' => $code, 'message' => $message, 'erro' => $e->getMessage()]);
+});
 
 return $app;

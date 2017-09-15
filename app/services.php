@@ -12,6 +12,7 @@ use Report\Entity\Parametros;
 use Report\Entity\Queries;
 use Report\Entity\Relatorios;
 use Report\Entity\Tabelas;
+use Report\Entity\Run;
 
 $app['queries.repository'] = $app['orm.em']->getRepository(Queries::class);
 
@@ -24,4 +25,6 @@ $app['parametros.repository'] = $app['orm.em']->getRepository(Parametros::class)
 $app['tables.repository'] = $app['orm.em']->getRepository(Tabelas::class);
 
 $app['columns.repository'] = $app['orm.em']->getRepository(Colunas::class);
+
+$app['run.repository'] = $app['orm.em']->getRepository(Run::class);
 

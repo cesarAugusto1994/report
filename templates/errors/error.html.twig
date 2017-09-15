@@ -1,0 +1,22 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Erro - {{ code }}{% endblock %}
+
+{% block content %}
+
+    <section class="moduler wrapper_404">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <h1 class="wow fadeInUp animated cd-headline slide" data-wow-delay=".4s" >{{ code }}</h1>
+                        <h2 class="wow fadeInUp animated" data-wow-delay=".6s">Opps! Ocorreu um erro.</h2>
+                        <p class="wow fadeInUp animated" data-wow-delay=".9s">{{ message }}</p>
+                        <a href="/" class="btn btn-dafault btn-home wow fadeInUp animated" data-wow-delay="1.1s">Ir para o Inicio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
