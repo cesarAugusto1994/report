@@ -28,3 +28,8 @@ $app['columns.repository'] = $app['orm.em']->getRepository(Colunas::class);
 
 $app['run.repository'] = $app['orm.em']->getRepository(Run::class);
 
+$app['information.schema.repository'] = function () use ($app) {
+    return new \Report\Repository\InformationSchemaRepository($app['orm.em']->getConnection());
+};
+
+$app['valor.padrao.verificacao.registros'] = 15;

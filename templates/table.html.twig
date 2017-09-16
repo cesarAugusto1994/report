@@ -33,7 +33,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Tabela</div>
             <div class="panel-body">
-                <h2>{{ table.nomeFormatado }}</h2>
+                <h2>{{ table.nomeFormatado }} <small>({{ table.schema }}.{{ table.nome }})</small></h2>
                 <p class="lead">Registros: {{ table.rows }}</p>
             </div>
         </div>
@@ -195,11 +195,11 @@
 
         <div class="panel panel-default">
 
-            <div class="panel-heading">Colunas</div>
+            <div class="panel-heading">Colunas <a href="{{ path('importar_colunas', { id : table.id, nome : table.nome, schema : table.schema }) }}" class="btn btn-xs pull-right">Importar Colunas</a></div>
 
             <div class="panel-body">
 
-                <table class="table table-bordered table-responsive table-hovered">
+                <table class="table table-responsive table-hover">
                     <thead>
                     <tr>
                         <th>Coluna</th>

@@ -46,25 +46,73 @@ $app->get('/tables', function () use ($app) {
 
 $app->post('/tabela/add', function (Request $request) use ($app) {
 
-    $nome = $request->request->get('nome');
-    $schema = $request->request->get('schema');
+    try {
 
-    $tables = $app['tables.repository']->findOneBy(['nome' => $nome, 'schema' => $schema]);
+        $nome = $request->request->get('nome');
+        $schema = $request->request->get('schema');
 
-    if (!empty($tables)) {
-        throw new Exception("Tabela já existe para esse Banco de Dados.");
+        $hasTable = $app['information.schema.repository']->hasTableSchema($nome, $schema);
+
+        if (!$hasTable) {
+            throw new Exception("Esta Tabela não existe em nenhum banco de dados configurado.", 404);
+        }
+
+        $tables = $app['tables.repository']->findOneBy(['nome' => $nome, 'schema' => $schema]);
+
+        if (!empty($tables)) {
+            throw new Exception("Tabela já existe para esse Banco de Dados.", 404);
+        }
+
+        $tabela = new Tabelas();
+        $tabela->setNome($nome);
+        $tabela->setSchema($schema);
+        $tabela->setAtivo(true);
+
+        $app['tables.repository']->save($tabela);
+
+        return $app->redirect('/tabela/' . $tabela->getNome());
+
+    } catch (Exception $e) {
+        throw $e;
     }
 
-    $tabela = new Tabelas();
-    $tabela->setNome($nome);
-    $tabela->setSchema($schema);
-    $tabela->setAtivo(true);
-
-    $app['tables.repository']->save($tabela);
-
-    return $app->redirect('/tabela/' . $tabela->getNome());
 
 })->bind('tabela_adicionar');
+
+
+$app->get('/tabela/{id}/{nome}/colunas/import-from-schema/{schema}', function ($id, $nome, $schema, Request $request) use ($app) {
+
+    try {
+
+        $colunas = $app['information.schema.repository']->findColumnsTable($id, $nome, $schema);
+
+        $tabela = $app['tables.repository']->find($id);
+
+        foreach ($colunas as $item) {
+
+            if ($app['columns.repository']->findOneBy(['tabela' => $tabela, 'nome' => $item['nome']])) {
+                continue;
+            }
+
+            $coluna = new Colunas();
+            $coluna->setNome($item['nome']);
+            $coluna->setTipo($item['tipo']);
+            $coluna->setTabela($tabela);
+            $coluna->setChavePrimaria($item['chave_primaria']);
+            $coluna->setLabel(false);
+            $coluna->setVisualizar(true);
+
+            $app['columns.repository']->save($coluna);
+        }
+
+        return $app->redirect('/tabela/'.$nome);
+
+    } catch (Exception $e) {
+        return new \Symfony\Component\HttpFoundation\Response($e->getMessage());
+    }
+
+
+})->bind('importar_colunas');
 
 $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
@@ -83,7 +131,7 @@ $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
     $update = false;
 
-    if (empty($table->getUpdatedAt()) || (!empty($table->getUpdatedAt()) && $table->getUpdatedAt()->diff(new DateTime('now'))->days > 2)) {
+    if (empty($table->getUpdatedAt()) || (!empty($table->getUpdatedAt()) && $table->getUpdatedAt()->diff(new DateTime('now'))->days > $app['valor.padrao.verificacao.registros'])) {
         $update = true;
     }
 
