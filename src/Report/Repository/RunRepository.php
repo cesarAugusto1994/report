@@ -24,4 +24,13 @@ class RunRepository extends EntityRepository
         $this->_em->flush();
     }
 
+    /**
+     * @param Run $run
+     */
+    public function remove(Run $run)
+    {
+        $this->_em->remove($run);
+        $this->_em->flush();
+    }
+
 }

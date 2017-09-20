@@ -720,9 +720,14 @@ $app->match('/query/{id}/remove', function ($id) use ($app) {
     }
 
     $parametros = $app['parametros.repository']->findBy(['query' => $query]);
+    $run = $app['run.repository']->findBy(['query' => $query]);
 
     foreach ($parametros as $parametro) {
         $app['parametros.repository']->remove($parametro);
+    }
+
+    foreach ($run as $item) {
+        $app['run.repository']->remove($item);
     }
 
     $app['queries.repository']->remove($query);
