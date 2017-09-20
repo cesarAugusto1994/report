@@ -38,7 +38,6 @@
                     <tr>
                         <th data-sortable="true">ID</th>
                         <th data-sortable="true">Query</th>
-                        <th data-sortable="true">Parametros</th>
                         <th data-sortable="true">Registros</th>
                         <th data-sortable="true">Data</th>
                     </tr>
@@ -49,7 +48,6 @@
                         <tr>
                             <td>{{ log.id }}</td>
                             <td>{{ log.query.nome }}</td>
-                            <td>{{ log.parameters }}</td>
                             <td>{{ log.rowsReturned }}</td>
                             <td>{{ log.runAt|date('d/m/Y H:i:s') }}</td>
                         </tr>

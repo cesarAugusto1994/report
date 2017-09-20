@@ -79,7 +79,6 @@ $app->post('/tabela/add', function (Request $request) use ($app) {
 
 })->bind('tabela_adicionar');
 
-
 $app->get('/tabela/{id}/{nome}/colunas/import-from-schema/{schema}', function ($id, $nome, $schema, Request $request) use ($app) {
 
     try {
@@ -338,6 +337,28 @@ $app->post('/query/create', function (Request $request) use ($app) {
         }
 
     }
+
+    else if ($crud == 'insert') {
+
+        $queryString = " INSERT INTO {$table->getSchema()}.{$table->getNome()} SET ";
+
+        foreach ($select as $item) {
+
+            /**
+             * @var Colunas $coluna
+             */
+            $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
+
+            if ($coluna->isChavePrimaria()) {
+                continue;
+            }
+
+            $queryString .=  "{$arrayColumns[$item]} = ':{$arrayColumns[$item]}:', ";
+        }
+
+        $queryString = substr($queryString, 0, -2);
+    }
+
     else {
 
         $queryString = " UPDATE {$table->getSchema()}.{$table->getNome()} SET ";
@@ -349,21 +370,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
              */
             $coluna = $app['columns.repository']->findOneBy(['tabela' => $table, 'nome' => $arrayColumns[$item]]);
 
-            $isInteiro = false;
-
-            if ($coluna->getTabelaRef()) {
-                /**
-                 * @var Colunas $colunaRef
-                 */
-                $colunaRef = $app['columns.repository']->findOneBy(
-                    ['tabela' => $coluna->getTabelaRef(), 'chavePrimaria' => true]
-                );
-                if ($colunaRef) {
-                    $isInteiro = true;
-                }
-            }
-
-            $queryString .=  "{$arrayColumns[$item]} = :{$arrayColumns[$item]}:, ";
+            $queryString .=  "{$arrayColumns[$item]} = ':{$arrayColumns[$item]}:', ";
         }
 
         $queryString = substr($queryString, 0, -2);
@@ -373,12 +380,12 @@ $app->post('/query/create', function (Request $request) use ($app) {
             $stmt = " WHERE ";
 
             if (1 == count($where)) {
-                $queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
+                //$queryString .= " {$stmt} 1 = 1 " . PHP_EOL;
             }
 
             foreach ($where as $key => $item) {
 
-                if (0 < $key && 1 < count($where)) {
+                if (0 > $key && 1 < count($where)) {
                     $stmt = " AND ";
                 }
 
@@ -442,7 +449,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     $app['queries.repository']->save($query);
 
-    if ($crud == 'update') {
+    if ($crud == 'update' || $crud == 'insert') {
 
         if (!empty($select)) {
 
@@ -471,6 +478,11 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
                 if ($array['chavePrimaria'] == true) {
                     $tipo = 'text';
+
+                    if ($crud == 'insert') {
+                        continue;
+                    }
+
                     /**
                      * @var Tabelas $tabela
                      */
