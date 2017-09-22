@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Formatos
  * @package Report\Entity
- * @ORM\Table(name="formatos", schema="relatorio")
+ * @ORM\Table(name="formatos")
  * @ORM\Entity(repositoryClass="Report\Repository\FormatosRepository")
  */
 class Formatos

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Tabelas
  *
- * @ORM\Table(name="tabelas", schema="relatorio")
+ * @ORM\Table(name="tabelas")
  * @ORM\Entity(repositoryClass="Report\Repository\TabelasRepository")
  */
 class Tabelas

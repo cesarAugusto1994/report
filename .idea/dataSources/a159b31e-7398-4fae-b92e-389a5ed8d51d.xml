@@ -11205,7 +11205,7 @@ dia</ColNames>
     </column>
     <column id="3463" parent="225" name="carteira_modalidade">
       <Position>9</Position>
-      <Comment> Modalidade/Carteira de Cobrança (1-Registrada/2-SSem Registro) </Comment>
+      <Comment> Modalidade/Carteira de Cobrança (1-Registrada/2-SSem Registro)</Comment>
       <DataType>tinyint(1)|0</DataType>
       <NotNull>1</NotNull>
     </column>
@@ -22032,7 +22032,6 @@ id_status</ColNames>
     </column>
     <column id="5668" parent="413" name="status">
       <Position>13</Position>
-      <Comment>		</Comment>
       <DataType>enum(&apos;Pendente&apos;, &apos;Download&apos;, &apos;Visualizacao&apos;, &apos;Finalizado&apos;, &apos;Cancelado&apos;)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;Pendente&apos;</DefaultExpression>
@@ -33142,7 +33141,7 @@ PedidoStatus</ColNames>
     </column>
     <column id="7839" parent="610" name="nosso_numero">
       <Position>7</Position>
-      <Comment>Nosso numero igual a numero do pedido com </Comment>
+      <Comment>Nosso numero igual a numero do pedido com</Comment>
       <DataType>varchar(20)|0</DataType>
     </column>
     <column id="7840" parent="610" name="email">
@@ -49682,7 +49681,7 @@ pdv_envio_valores_cofre_id</ColNames>
     </column>
     <column id="11179" parent="890" name="tipo_frete">
       <Position>10</Position>
-      <Comment>Tipo valor do frete 1 Porcentagem / 2 Valor </Comment>
+      <Comment>Tipo valor do frete 1 Porcentagem / 2 Valor</Comment>
       <DataType>enum(&apos;Porcentagem&apos;, &apos;Valor&apos;)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;Valor&apos;</DefaultExpression>
@@ -49861,7 +49860,7 @@ id_produto_disponibilidade_futura</ColNames>
     </column>
     <column id="11206" parent="891" name="vBC_COFINS_ST">
       <Position>13</Position>
-      <Comment>Valor de base de cálculo do COFINS substituição tributária </Comment>
+      <Comment>Valor de base de cálculo do COFINS substituição tributária</Comment>
       <DataType>decimal(15,2) unsigned|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;0.00&apos;</DefaultExpression>
@@ -52881,7 +52880,7 @@ paymno</ColNames>
     </column>
     <column id="11818" parent="937" name="tipo_residencia_cod">
       <Position>32</Position>
-      <Comment>Corresponde a &apos;Tipo Residencia&apos;. </Comment>
+      <Comment>Corresponde a &apos;Tipo Residencia&apos;.</Comment>
       <DataType>varchar(20)|0</DataType>
     </column>
     <column id="11819" parent="937" name="reside_desde">
@@ -57967,7 +57966,7 @@ ultima_atualizacao</ColNames>
     </column>
     <column id="12874" parent="1001" name="tributacao_cofins">
       <Position>8</Position>
-      <Comment>Tributa COFINS </Comment>
+      <Comment>Tributa COFINS</Comment>
       <DataType>tinyint(1)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
@@ -66245,7 +66244,7 @@ id_pedido_entrega_produto</ColNames>
     </column>
     <column id="14560" parent="1128" name="vBC_COFINS_ST">
       <Position>14</Position>
-      <Comment>Valor de base de cálculo do COFINS substituição tributária </Comment>
+      <Comment>Valor de base de cálculo do COFINS substituição tributária</Comment>
       <DataType>decimal(15,2) unsigned|0</DataType>
     </column>
     <column id="14561" parent="1128" name="vCOFINS_ST">
@@ -66421,7 +66420,7 @@ ICMS</Comment>
     </column>
     <column id="14596" parent="1129" name="vBC_COFINS_ST">
       <Position>14</Position>
-      <Comment>Valor de base de cálculo do COFINS substituição tributária </Comment>
+      <Comment>Valor de base de cálculo do COFINS substituição tributária</Comment>
       <DataType>decimal(15,2) unsigned|0</DataType>
     </column>
     <column id="14597" parent="1129" name="vCOFINS_ST">
@@ -66616,7 +66615,7 @@ ICMS</Comment>
     </column>
     <column id="14637" parent="1130" name="vBC_COFINS_ST">
       <Position>18</Position>
-      <Comment>Valor de base de cálculo do COFINS substituição tributária </Comment>
+      <Comment>Valor de base de cálculo do COFINS substituição tributária</Comment>
       <DataType>decimal(15,2) unsigned|0</DataType>
     </column>
     <column id="14638" parent="1130" name="vCOFINS_ST">
@@ -70080,7 +70079,6 @@ status</ColNames>
     </column>
     <column id="15327" parent="1185" name="id_usuario_registro">
       <Position>5</Position>
-      <Comment>							</Comment>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>

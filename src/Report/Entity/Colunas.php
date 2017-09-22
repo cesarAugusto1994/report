@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Colunas
  *
- * @ORM\Table(name="colunas", indexes={@ORM\Index(name="colunas_tabelas_id_fk", columns={"tabela_id"})}, schema="relatorio")
+ * @ORM\Table(name="colunas", indexes={@ORM\Index(name="colunas_tabelas_id_fk", columns={"tabela_id"})})
  * @ORM\Entity(repositoryClass="Report\Repository\ColunasRepository")
  */
 class Colunas

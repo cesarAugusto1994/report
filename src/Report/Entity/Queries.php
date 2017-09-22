@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Queries
  *
- * @ORM\Table(name="queries", uniqueConstraints={@ORM\UniqueConstraint(name="queries_nome_uindex", columns={"nome"})}, indexes={@ORM\Index(name="queries_tabelas_id_fk", columns={"tabela"})}, schema="relatorio")
+ * @ORM\Table(name="queries", uniqueConstraints={@ORM\UniqueConstraint(name="queries_nome_uindex", columns={"nome"})}, indexes={@ORM\Index(name="queries_tabelas_id_fk", columns={"tabela"})})
  * @ORM\Entity(repositoryClass="Report\Repository\QueriesRepository")
  */
 class Queries

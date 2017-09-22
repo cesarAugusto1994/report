@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Relatorios
  * @package Report\Entity
- * @ORM\Table(name="relatorios", schema="relatorio")
+ * @ORM\Table(name="relatorios")
  * @ORM\Entity(repositoryClass="Report\Repository\RelatoriosRepository")
  */
 class Relatorios

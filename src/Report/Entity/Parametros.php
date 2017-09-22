@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Parametros
  * @package Report\Entity
- * @ORM\Table(name="parametros", schema="relatorio")
+ * @ORM\Table(name="parametros")
  * @ORM\Entity(repositoryClass="Report\Repository\ParametrosRepository")
  */
 class Parametros

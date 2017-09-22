@@ -1372,7 +1372,7 @@ $app->post('tabela/{id}/mesclar-colunas', function ($id, Request $request) use (
     return $app->redirect('/');
 
 })->bind('mesclar_colunas');
-
+/*
 $app->error(function (\Exception $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
     switch ($code) {
         case 400 :
@@ -1396,5 +1396,5 @@ $app->error(function (\Exception $e, \Symfony\Component\HttpFoundation\Request $
     }
     return $app['twig']->render('errors/error.html.twig', ['code' => $code, 'message' => $message, 'erro' => $e->getMessage()]);
 });
-
+*/
 return $app;

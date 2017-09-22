@@ -5,7 +5,7 @@ namespace Report\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="run", schema="relatorio")
+ * @ORM\Table(name="run")
  * @ORM\Entity(repositoryClass="Report\Repository\RunRepository")
  */
 class Run
