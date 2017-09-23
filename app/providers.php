@@ -9,11 +9,10 @@
 $app->register(new \Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
         'driver' => 'pdo_mysql',
-        'host' => 'mysql857.umbler.com',
-        'port' => 41890,
-        'dbname' => 'blogcezzaar',
-        'user' => 'cezzaar94',
-        'password' => 'elpro1973',
+        'host' => '192.168.111.2',
+        'dbname' => 'relatorio',
+        'user' => 'webpdv',
+        'password' => 'p@lerm02156',
         'charset' => 'utf8mb4',
     ],
 ]);

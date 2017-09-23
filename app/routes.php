@@ -154,6 +154,53 @@ $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
 
 })->bind('tabela');
 
+$app->get('/tabela/{nome}/execute', function ($nome, Request $request) use ($app) {
+
+    /**
+     * @var Tabelas $table
+     */
+    $table = $app['tables.repository']->findOneBy(['nome' => $nome]);
+
+    $log = $result = $colunas = [];
+    $arrayResult = $colunas = [];
+
+    try {
+
+        $string = " SELECT * FROM {$table->getSchema()}.{$table->getNome()} ";
+
+        $result = $app['db']->fetchAll($string);
+
+        foreach ($result as $cols) {
+            foreach ($cols as $key => $col) {
+                $colunas[] = isset($col['nome']) ? $col['nome'] : $key;
+            }
+            break;
+        }
+
+        $colunas = array_map(function ($coluna) {
+            return ucwords(str_replace('_', ' ', $coluna));
+        }, $colunas);
+
+
+    } catch (Exception $e) {
+        $log = ['classe' => 'danger', 'msg' => $e->getMessage()];
+    }
+
+    return $app['twig']->render('execute.html.twig',
+        [
+            'result' => $result,
+            'columns' => $colunas,
+            'log' => $log,
+            'query' => [],
+            'dados' => [],
+            'parametros' => [],
+            'parametrosR' => [],
+            'params' => [],
+            'table' => $table->getNome(),
+        ]);
+
+})->bind('tabela_execute');
+
 $app->get('/queries', function () use ($app) {
 
     $queries = $app['queries.repository']->findAll();
@@ -438,7 +485,7 @@ $app->post('/query/create', function (Request $request) use ($app) {
 
     }
 
-    $nome = $table->getNomeFormatado() . '_v' . date('dmYHis');
+    $nome = $table->getNomeFormatado() . ' ' . strtoupper($crud) . ' v' . date('dmYHis');
 
     $query = new Queries();
     $query->setNome($nome);
@@ -1372,6 +1419,101 @@ $app->post('tabela/{id}/mesclar-colunas', function ($id, Request $request) use (
     return $app->redirect('/');
 
 })->bind('mesclar_colunas');
+
+$app->get('/search', function (Request $request) use ($app) {
+
+   $search = $request->get('q');
+
+    $tabelas = $app['tables.repository']->findBy(['nome' => $search]);
+    $colunas = $app['columns.repository']->findBy(['nome' => $search]);
+    $queries = $app['queries.repository']->findBy(['nome' => $search]);
+
+});
+
+$app->get('/importar-tabelas', function (Request $request) use ($app) {
+
+    $schemas = [
+        'webpdv',
+        'sqldados',
+        'sqlpdv',
+        'ecf',
+        'foxpaf',
+        'curriculos',
+        'relatorio',
+    ];
+
+    return $app['twig']->render('importar-tabelas.html.twig',
+        ['schemas' => $schemas]);
+
+
+})->bind('import');
+
+$app->get('/importar-tabelas/{schema}', function ($schema, Request $request) use ($app) {
+
+    $tabelas = $app['tables.repository']->findBy(['schema' => $schema]);
+
+    $tabelas = array_map(
+        function ($tabela) {
+            return (string)$tabela->getNome();
+        },
+        $tabelas
+    );
+
+    $stmt = null;
+
+    foreach ($tabelas as $tabela) {
+
+        $stmt .= " '{$tabela}', ";
+
+    }
+
+    $stmt = substr($stmt, 0, -2);
+
+    $query = "SELECT * FROM information_schema.TABLES where TABLE_SCHEMA = '{$schema}' AND TABLE_NAME NOT IN({$stmt})";
+
+    $result = $app['db']->fetchAll($query);
+
+    return $app['twig']->render(
+        'importar-tabelas-schema.html.twig',
+        ['result' => $result, 'schema' => $schema]
+    );
+
+})->bind('import-from-schema');
+
+$app->get('/importar-tabelas/{schema}/{tabela}/add', function ($schema, $tabela, Request $request) use ($app) {
+
+    try {
+
+        $nome = $tabela;
+
+        $hasTable = $app['information.schema.repository']->hasTableSchema($nome, $schema);
+
+        if (!$hasTable) {
+            throw new Exception("Esta Tabela não existe em nenhum banco de dados configurado.", 404);
+        }
+
+        $tables = $app['tables.repository']->findOneBy(['nome' => $nome, 'schema' => $schema]);
+
+        if (!empty($tables)) {
+            throw new Exception("Tabela já existe para esse Banco de Dados.", 404);
+        }
+
+        $tabela = new Tabelas();
+        $tabela->setNome($nome);
+        $tabela->setSchema($schema);
+        $tabela->setAtivo(true);
+
+        $app['tables.repository']->save($tabela);
+
+        return $app->redirect('/tabela/' . $tabela->getNome());
+
+    } catch (Exception $e) {
+        throw $e;
+    }
+
+
+})->bind('import-table');
+
 /*
 $app->error(function (\Exception $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
     switch ($code) {

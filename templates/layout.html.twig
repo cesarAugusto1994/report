@@ -56,10 +56,21 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="{{ path('tabelas') }}">Tabelas<span class="sr-only">(current)</span></a></li>
                 <li><a href="{{ path('queries') }}">Queries<span class="sr-only">(current)</span></a></li>
-                <li><a href="{{ path('log') }}">LOG</a></li>
+                <li><a href="{{ path('log') }}"><b>LOG</b></a></li>
+                <li><a href="{{ path('import') }}">Importar Tabelas</a></li>
                 <li><a href="#"></a></li>
             </ul>
+
+            <form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input type="text" size="70" class="form-control" name="q" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Buscar</button>
+            </form>
+
         </div>
+
+
 
     </div><!-- /.container-fluid -->
 </nav>

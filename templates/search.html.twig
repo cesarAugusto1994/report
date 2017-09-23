@@ -1,0 +1,239 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+        {% if log|length > 0 %}
+            <div class="alert alert-{{ log.classe }}">
+                <p class="lead">{{ log.msg }}</p>
+            </div>
+        {% endif %}
+
+        {% if parametros is defined %}
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading">Formulário</div>
+
+                <form class="form-horizontal">
+                    <div class="panel-body">
+                        {% if query is not empty %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Query:</label>
+                                <div class="col-sm-10">
+                                    <p class="lead">{{ query.nome }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% for keyp, parametro in parametros %}
+
+                            <input type="hidden" id="{{ keyp }}-i">
+
+                        {% endfor %}
+
+                        {% if parametrosR is defined %}
+                            {% for p in parametrosR %}
+                                {{ p|raw }}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-flash"> </span>Executar
+                        </button>
+                        {% if query is not empty %}
+                            <button type="button" class="btn btn-warning btn-sm pull-right" data-toggle="modal"
+                                    data-target="#query">
+                                Ver Query
+                            </button>
+                        {% endif %}
+                    </div>
+                </form>
+
+            </div>
+
+        {% endif %}
+
+        {% if result is not empty %}
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading">Resultado
+                    {% if query is not empty and query.tabela is not empty %}
+                        <a href="{{ path('tabela', { nome : query.tabela.nome }) }}"
+                           class="btn btn-success btn-xs pull-right">{{ query.tabela.nomeFormatado }}</a>
+                    {% elseif table is not empty %}
+                        <a href="{{ path('tabela', { nome : table }) }}"
+                           class="btn btn-success btn-xs pull-right">{{ table|replace('_', ' ')|capitalize }}</a>
+                    {% endif %}
+                </div>
+
+                <div class="panel-body">
+
+                    <div id="toolbar">
+                        <select id="export" class="form-control">
+                            <option value="">Export Basic</option>
+                            <option value="all">Export All</option>
+                        </select>
+                    </div>
+
+                    <table id="table"
+                           class="table table-bordered table-responsive table-hover"
+                           data-toggle="table"
+                           data-striped="true"
+                           data-search="true"
+                           data-show-toggle="true"
+                           data-show-columns="true"
+                           data-pagination="true"
+                           data-single-select="true"
+                           data-maintain-selected="true"
+                           data-show-pagination-switch="true"
+                           data-sortable="true"
+                           data-show-export="true"
+                           data-click-to-select="true"
+                           data-flat="true"
+                           data-show-refresh="true"
+                           data-advanced-search="true"
+                           data-toolbar="#toolbar">
+
+                        {% if columns|length > 0 %}
+                            <thead>
+                            <tr>
+                                {% for column in columns %}
+                                    <th data-sortable="true">{{ column }}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                        {% endif %}
+
+                        <tbody>
+                        {% for itens in result %}
+                            <tr>
+                                {% for item in itens %}
+                                    {% if item is iterable %}
+                                        <td>{% if item.tabela is not empty %}<a
+                                                href="/execute/{{ item.tabela }}/{{ item.coluna }}/{{ item.valor }}">
+                                                {% if item.label is not empty %}{{ item.label }}{% else %}{{ item.valor }}{% endif %}</a>
+                                            {% else %}
+                                                {{ item.valor }}
+                                            {% endif %}
+                                        </td>
+                                    {% else %}
+                                        <td>{{ item }}</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    {% if query is not empty %}
+        <div class="modal fade" id="query" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Query</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <pre>{{ query.query }}</pre>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="{{ path('query_editar', { id : query.id }) }}" class="btn btn-primary">Editar</a>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+
+    <script>
+
+        $(document).ready(function () {
+
+            var $table = $('#table');
+            $(function () {
+                $('#toolbar').find('select').change(function () {
+                    $table.bootstrapTable('destroy').bootstrapTable({
+                        exportDataType: $(this).val()
+                    });
+                });
+            });
+
+            $('.input-daterange').datepicker({
+                todayBtn: true,
+                clearBtn: true
+            });
+
+            $('.datepicker').datepicker({
+
+                todayBtn: true,
+                todayHighlight: true,
+
+                format: 'yyyymmdd'
+
+            });
+
+            $('.datepicker2').datepicker({
+
+                todayBtn: true,
+                todayHighlight: true,
+
+                format: 'yyyy-mm-dd 00:00:00'
+
+            });
+
+            $(".parametro").blur(function () {
+
+                var paramns = [];
+
+                var valor = $(this).val();
+
+                if (!valor) {
+                    return;
+                }
+
+                var nomeParam = $(this).data('param');
+                var item = $("#" + nomeParam + "-i");
+
+                if (!item.val()) {
+                    item.val(valor);
+                }
+
+                var i = item.val();
+
+                var target = ':' + nomeParam + ':';
+
+                var view = $("#query-view");
+                var v = view.val().replace(target, valor);
+
+                if (valor !== i) {
+                    v = view.val().replace(i, valor);
+                }
+
+                paramns.push(target + '=' + valor);
+                $("#parametros").val(paramns.toString());
+                view.val(v);
+            });
+
+        });
+
+    </script>
+
+{% endblock %}
+

@@ -1,0 +1,61 @@
+{% extends "layout.html.twig" %}
+{% block content %}
+
+    <div class="container">
+
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">Resultado</div>
+
+            <div class="panel-body">
+
+                <div id="toolbar">
+                    <select id="export" class="form-control">
+                        <option value="">Export Basic</option>
+                        <option value="all">Export All</option>
+                    </select>
+                </div>
+
+                <table id="table"
+                       class="table table-bordered table-responsive table-hover"
+                       data-toggle="table"
+                       data-striped="true"
+                       data-search="true"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-pagination="true"
+                       data-single-select="true"
+                       data-maintain-selected="true"
+                       data-show-pagination-switch="true"
+                       data-sortable="true"
+                       data-show-export="true"
+                       data-click-to-select="true"
+                       data-flat="true"
+                       data-show-refresh="true"
+                       data-advanced-search="true"
+                       data-toolbar="#toolbar">
+
+                    <thead>
+                    <tr>
+                        <th data-sortable="true">Schemas</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for item in schemas %}
+                        <tr>
+                            <td><a href="{{ path('import-from-schema', { schema : item }) }}">{{ item }}</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

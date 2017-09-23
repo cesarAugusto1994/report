@@ -17,15 +17,17 @@
     <file url="file://$PROJECT_DIR$/src/Report/Controller" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/Report/Entity" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/Report/Helpers/ParametrosHelper.php" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Report/Query" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/Report/Repository" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/execute.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/export.html.twig" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/templates/importar-tabelas-schema.html.twig" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/templates/importar-tabelas.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/queries.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/query-add.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/query-edit.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/query-new.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/relatorio.html.twig" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/templates/search.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/table.html.twig" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web/assets/vendor/react" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/webpack.config.js" charset="UTF-8" />

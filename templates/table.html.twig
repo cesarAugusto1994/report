@@ -33,7 +33,9 @@
         <div class="panel panel-default">
             <div class="panel-heading">Tabela</div>
             <div class="panel-body">
-                <h2>{{ table.nomeFormatado }} <small>({{ table.schema }}.{{ table.nome }})</small></h2>
+                <h2>{{ table.nomeFormatado }}
+                    <small>({{ table.schema }}.{{ table.nome }})</small>
+                </h2>
                 <p class="lead">Registros: {{ table.rows }}</p>
             </div>
         </div>
@@ -41,7 +43,10 @@
         <div class="panel panel-default">
             <div class="panel-heading">Criar Query</div>
             <div class="panel-body">
-                    <button data-toggle="modal" data-target="#crud" class="btn btn-success btn-sm">Criar Query</button>
+                <button data-toggle="modal" data-target="#crud" class="btn btn-success btn-sm">Criar Query</button>
+                {% if table.rows < 50 %}
+                    <a class="btn" href="{{ path('tabela_execute',  { nome : table.nome }) }}">Buscar Registros</a>
+                {% endif %}
             </div>
         </div>
 
@@ -80,7 +85,9 @@
                     {% for item in union %}
                         <tr>
                             <th>
-                                <a href="{{ path('tabela', { nome : item.tabela.nome }) }}">{{ item.tabela.nomeFormatado }} <small>({{ item.nome }})</small></a>
+                                <a href="{{ path('tabela', { nome : item.tabela.nome }) }}">{{ item.tabela.nomeFormatado }}
+                                    <small>({{ item.nome }})</small>
+                                </a>
                             </th>
                         </tr>
                     {% else %}
@@ -95,7 +102,9 @@
 
         <div class="panel panel-default">
 
-            <div class="panel-heading">Colunas <a href="{{ path('importar_colunas', { id : table.id, nome : table.nome, schema : table.schema }) }}" class="btn btn-xs pull-right">Importar Colunas</a></div>
+            <div class="panel-heading">Colunas <a
+                        href="{{ path('importar_colunas', { id : table.id, nome : table.nome, schema : table.schema }) }}"
+                        class="btn btn-xs pull-right">Importar Colunas</a></div>
 
             <div class="panel-body">
 
