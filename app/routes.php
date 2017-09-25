@@ -1139,6 +1139,7 @@ $app->get('/execute/{id}', function ($id, Request $request) use ($app) {
             'parametrosR' => $parametrosR,
             'params' => $pR,
             'table' => $query->getTabela(),
+            'queryString' => $string
         ]);
 
 })->bind('query_execute');
