@@ -25,6 +25,19 @@ $api->get('/queries', function (Request $request) use ($app) {
     return new JsonResponse($retorno);
 });
 
+$api->get('/relatorios', function (Request $request) use ($app) {
+
+    $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($relatorios as $relatorio) {
+        $retorno[] = $relatorio->toArray();
+    }
+
+    return new JsonResponse($retorno);
+});
+
 $api->get('/tabela/{id}/colunas', function ($id) use ($app) {
 
     $table = $app['tables.repository']->find($id);
@@ -224,6 +237,24 @@ $api->get('/tabelas', function () use ($app) {
 
     foreach ($tables as $table) {
         $retorno[$table->getId()] = $table->getNomeFormatado() . ' - ' . $table->getSchema();
+    }
+
+    return new JsonResponse($retorno);
+});
+
+$api->get('/tables', function () use ($app) {
+
+    $tables = $app['tables.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($tables as $table) {
+        $retorno[] = [
+            'id' => $table->getId(),
+            'nome' => $table->getNome(),
+            'nomeFormatado' => $table->getNomeFormatado(),
+            'schema' => $table->getSchema(),
+        ];
     }
 
     return new JsonResponse($retorno);

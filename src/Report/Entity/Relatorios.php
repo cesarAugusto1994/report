@@ -90,7 +90,8 @@ class Relatorios
     public function toArray()
     {
         return [
-            'id' => $this->id
+            'id' => $this->id,
+            'nome' => $this->nome
         ];
     }
 }
