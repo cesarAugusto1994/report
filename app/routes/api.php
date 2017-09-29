@@ -25,6 +25,23 @@ $api->get('/queries', function (Request $request) use ($app) {
     return new JsonResponse($retorno);
 });
 
+$api->get('/query', function (Request $request) use ($app) {
+
+    $queries = $app['queries.repository']->findBy([], ['nome' => 'ASC']);
+
+    $retorno = [];
+
+    foreach ($queries as $query) {
+        $retorno[] = [
+            'id' => $query->getId(),
+            'nome' => $query->getNome()
+        ];
+    }
+
+    return new JsonResponse($retorno);
+});
+
+
 $api->get('/relatorios', function (Request $request) use ($app) {
 
     $relatorios = $app['relatorios.repository']->findBy([], ['nome' => 'ASC']);

@@ -131,7 +131,7 @@ $app->get('/tabela/{nome}', function ($nome, Request $request) use ($app) {
     $update = false;
 
     if (empty($table->getUpdatedAt()) || (!empty($table->getUpdatedAt()) && $table->getUpdatedAt()->diff(new DateTime('now'))->days > $app['valor.padrao.verificacao.registros'])) {
-        $update = true;
+        //$update = true;
     }
 
     if ($update) {
